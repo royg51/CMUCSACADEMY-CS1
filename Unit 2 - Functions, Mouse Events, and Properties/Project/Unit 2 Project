@@ -1,0 +1,173 @@
+'''
+Author: Roy Gutta
+Creation Date: 9/17/23
+Last Modified: 9/27/23
+Rubric Item:
+Fill: Line 33
+Border: Line 46
+Border Width: Line 135
+Named Color: Line 34
+RGB: Line 22
+Opacity: Line 43
+Gradient: Line 48
+Rect: Line 31
+Circle: Line 32
+Oval: Line 65
+Star: Line 68
+Polygon: Line 62
+Label: Line 73
+'''
+
+#app properties
+app.background=gradient(rgb(117, 176, 254), rgb(135, 193, 255), rgb(143, 213, 255), rgb(163, 227, 255), start='top-right')
+
+#objects
+
+
+#Backgorund
+BackGround1=Rect(0, 0, 400, 400, fill=gradient(rgb(117, 176, 254), rgb(135, 193, 255), rgb(143, 213, 255), rgb(163, 227, 255), start='top-right'), visible=True)
+BackGround2=Rect(0, 0, 400, 400, fill=gradient(rgb(133, 89, 136), rgb(107, 73, 132), rgb(72, 52, 117), rgb(43, 47, 119), rgb(20, 24, 82), rgb(7, 11, 52), start='bottom-left'), visible=False)
+#FireTruck
+FireTruckBody = Rect(5, 175, 300, 200, fill='red')
+OuterWheel1 = Circle(35, 375, 30, fill='black')
+InnerWheel1 = Circle(35, 375, 20, fill='grey')
+OuterWheel2 = Circle(90, 375, 30, fill='black')
+InnerWheel2 = Circle(90, 375, 20, fill='grey')
+OuterWheel3 = Circle(210, 375, 30, fill='black')
+InnerWheel3 = Circle(210, 375, 20, fill='grey')
+Line(210, 175, 210, 345, lineWidth=3)
+Storage1 = Rect(15, 180, 190, 100, fill='gray')
+Storage2 = Rect(15, 285, 90, 50, fill='gray')
+Storage3 = Rect(110, 285, 95, 50, fill='gray')
+Window1 = Rect(220, 180, 75, 75, fill='skyBlue')
+Window = Rect(220, 180, 75, 75, fill=gradient('skyBlue', 'lightBlue', 'skyBlue', start='top-left'), opacity=60)
+Window2 = Polygon(220, 257, 295, 257, 270, 300, 220, 300, fill='skyBlue')
+WindowDivider = Line(220, 256, 295, 256)
+WindowOutline = Rect(215, 177, 87, 165, fill=None, border='black')
+DoorHandle = Rect(220, 305, 35, 15, fill='silver')
+Siren = Rect(210, 145, 30, 30, fill=gradient('red', 'white', 'red', start='right'))
+LadderPart1 = Line(5, 175, 240, 27)
+LadderPart2 = Line(60, 175, 260, 60)
+LadderPart3 = Line(43, 150, 60, 175)
+LadderPart4 = Line(73, 133, 90, 158)
+LadderPart5 = Line(102, 113, 120, 141)
+LadderPart6 = Line(131, 98, 150, 124)
+LadderPart7 = Line(160, 79, 180, 107)
+LadderPart8 = Line(190, 60, 210, 90)
+LadderPart9 = Line(220, 42, 240, 73)
+#BuldingBody
+Building = Rect(320, 85, 80, 360, fill=gradient(rgb(70, 30, 180), rgb(15, 82, 186),start='top-left'))
+#Fire
+fireYellow = Polygon(370, 90, 360, 80, 365, 100, 390, 110, 355, 100, 400, 90, 335, 88, 360, 110, 370, 85, fill=gradient('lightYellow', 'yellow', start='left'), opacity=80, visible=True, rotateAngle=-150)
+fireOrange = Polygon(370, 90, 360, 80, 365, 100, 390, 110, 355, 100, 400, 90, 335, 88, 360, 110, 370, 85, fill=gradient('white', 'orange', 'orangeRed', start='left'), opacity=80, visible=True,rotateAngle=-135)
+fireRed = Polygon(360, 75, 350, 65, 375, 85, 380, 95, 345, 90, 390, 80, 325, 78, 350, 100, 360, 75, fill=gradient('darkRed', 'red', start='right'), opacity=80, visible=True, rotateAngle=-110)
+#FireTruckButton
+Button = Oval(34, 311, 20, 20, fill='yellow')
+#SunandMoon
+Sun1 = Circle(382, 22, 30, fill=gradient(rgb(255, 223, 34), rgb(255, 219, 0), rgb(255, 215, 0), rgb(255, 229, 49)), visible=True)
+Sun = Star(382, 22, 43, 20, fill=gradient(rgb(255, 223, 34), rgb(255, 219, 0), rgb(255, 215, 0), rgb(255, 229, 49)), visible=True)
+Moon1 = Circle(364, 35, 30, fill=gradient(rgb(229, 229, 229), rgb(220, 220, 220), rgb(201, 201, 201)), visible=False)
+Moon = Circle(353, 35, 30, fill=rgb(20, 24, 82), visible=False)
+#FireTruckLabel
+app.firetruck = Label('Fire Truck', 107, 230, font = 'Arial', size=41, visible=True)
+app.fireisout = Label('Fire is out', 107, 230, font = 'Arial', size=41, visible=False)
+#WaterFromLaddder
+WaterBase = Polygon(240, 27, 260, 60, 289, 28, 265, 22, fill='gray')
+Water = Line(265, 22, 341, 75, fill=gradient(rgb(28, 163, 236), rgb(35, 137, 218), start='left'), lineWidth=15, visible=True)
+#PersonDriving
+Head = Circle(245, 207, 15)
+Body = Line(245, 207, 245, 270)
+Leg1 = Line(245, 270, 258, 273)
+Leg2 = Line(258, 273, 270, 300)
+Hand = Line(245, 238, 268, 229)
+#Steering
+SteeringLine = Line(295, 257, 282, 241)
+SteeringWheel = Circle(274, 234, 10, fill='black')
+SteeringWheel1 = Circle(274, 234, 5, fill='grey')
+SteeringWheel2 = Line(274, 234, 281, 228, fill='grey')
+SteeringWheel3 = Line(274, 234, 282, 241, fill='grey')
+SteeringWheel4 = Line(274, 234, 268, 243, fill='grey')
+SteeringWheel5 = Line(274, 234, 266, 229, fill='grey')
+#PersonSprayingWater
+Head1 = Circle(220, 10, 10)
+Body1 = Line(220, 10, 220, 45)
+Leg3 = Line(220, 45, 210, 90)
+Leg4 = Line(220, 45, 249, 63)
+Hand1 = Line(219, 26, 255, 34)
+#BuildingWindows
+BuildingWindow1 = Rect(327, 97, 15, 30)
+BuildingWindow2 = Rect(352, 97, 15, 30)
+BuildingWindow3 = Rect(377, 97, 15, 30)
+BuildingWindow4 = Rect(327, 137, 15, 30)
+BuildingWindow5 = Rect(352, 137, 15, 30)
+BuildingWindow6 = Rect(377, 137, 15, 30)
+BuildingWindow7 = Rect(327, 177, 15, 30)
+BuildingWindow8 = Rect(352, 177, 15, 30)
+BuildingWindow9 = Rect(377, 177, 15, 30)
+BuildingWindow10 = Rect(327, 217, 15, 30)
+BuildingWindow11 = Rect(352, 217, 15, 30)
+BuildingWindow12 = Rect(377, 217, 15, 30)
+BuildingWindow13 = Rect(327, 257, 15, 30)
+BuildingWindow14 = Rect(352, 257, 15, 30)
+BuildingWindow15 = Rect(377, 257, 15, 30)
+BuildingWindow16 = Rect(327, 297, 15, 30)
+BuildingWindow17 = Rect(352, 297, 15, 30)
+BuildingWindow18 = Rect(377, 297, 15, 30)
+BuildingWindow19 = Rect(327, 337, 15, 30)
+BuildingWindow20 = Rect(377, 337, 15, 30)
+#BuldingDoor
+Door = Rect(347, 337, 25, 60, fill='lightBlue')
+Doorknob = Circle(353, 365, 5, fill='gold')
+#WaterWheel
+WaterHandle = Star(151, 354, 20, 10, fill='black')
+WaterWheel = Circle(151, 354, 15, fill='darkGray')
+Waterwheel = Circle(151, 354, 5, fill='black')
+WaterWheel1 = Line(151, 354, 160, 341)
+WaterWheel2 = Line(151, 354, 165, 348)
+WaterWheel3 = Line(151, 354, 165, 358)
+WaterWheel4 = Line(151, 354, 141, 365)
+WaterWheel5 = Line(151, 354, 150, 369)
+WaterWheel5 = Line(151, 354, 159, 366)
+WaterWheel6 = Line(151, 354, 136, 357)
+WaterWheel7 = Line(151, 354, 136, 348)
+WaterWheel8 = Line(151, 354, 140, 338)
+WaterWheel9 = Line(151, 354, 150, 336)
+WaterWheel10 = Circle(151, 354, 25, fill=None, border='black', borderWidth=5)
+WaterWheel11 = Circle(151, 354, 16, fill=None, border='black', borderWidth=5)
+
+#events
+
+def onMousePress(mouseX, mouseY):
+    #It makes the fire and water go away and changes the time to night.
+    fireYellow.visible=False
+    fireOrange.visible=False
+    fireRed.visible=False
+    Water.visible=False
+    BackGround1.visible=False
+    BackGround2.visible=True
+    Sun.visible=False
+    Sun1.visible=False
+    app.firetruck=False
+    app.fireisout=True
+    Moon1.visible=True
+    Moon.visible=True
+    app.firetruck=False
+    app.fireisout=True
+def onMouseRelease(mouseX, mouseY):
+    #It makes the fire and water be visible again and changes the time back to day.
+    fireYellow.visible=True
+    fireOrange.visible=True
+    fireRed.visible=True
+    Water.visible=True
+    BackGround1.visible=True
+    BackGround2.visible=False
+    Sun.visible=True
+    Sun1.visible=True
+    app.firetruck=True
+    app.fireisout=False
+    Moon1.visible=False
+    Sun1.visible=True
+    Sun.visible=True
+    Moon.visible=False
+    app.firetruck=True
+    app.fireisout=False

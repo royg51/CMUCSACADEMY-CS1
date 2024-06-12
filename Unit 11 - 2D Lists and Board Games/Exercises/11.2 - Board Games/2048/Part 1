@@ -1,0 +1,74 @@
+app.board = makeList(4, 4)
+app.colors = [ rgb(240, 230, 220), rgb(235, 225, 200), rgb(240, 180, 125),
+               rgb(240, 140, 95), rgb(240, 125, 85), rgb(230, 90, 45),
+               rgb(245, 215, 105), rgb(240, 210, 65), rgb(230, 200, 30),
+               rgb(225, 185, 20), rgb(235, 200, 0) ]
+app.textColor = rgb(105, 95, 85)
+
+tiles = Group()
+
+def drawBoard():
+    #### START OF BLOCK DRAW_BOARD ####
+
+    # Create a rectangle cell for each row and column of the board.
+    ### Place Your Code Here ###
+    rows = 4
+    cols = 4
+    startX = 10
+    startY = 10
+    for row in range(rows):
+        for col in range(cols):
+            cell = Rect(startX + (col*100), startY+ (row*100), 80, 80, fill = rgb(205, 195, 180))
+    #### END OF BLOCK ####
+
+drawBoard()
+
+def drawTile(value, row, col):
+    # Creates a tile piece at the row and column and labels it with the
+    # number value.
+    counter = 0
+    tempValue = value
+
+    # Finds the index of the colors list.
+    while (tempValue > 2):
+        tempValue //= 2
+        counter += 1
+
+    # Draws a tile.
+    color = app.colors[counter]
+    tiles.add(
+        Rect(10 + (col * 100), 10 + (row * 100), 80, 80, fill=color),
+        Label(value, 50 + (col * 100), 50 + (row * 100), fill=app.textColor,
+              size=50, bold=True)
+        )
+
+def drawTiles():
+    # For every board cell that has a number value, creates a tile.
+    for rowIndex in range(len(app.board)):
+        row = app.board[rowIndex]
+        for colIndex in range(len(row)):
+            value = row[colIndex]
+            if (value != None):
+                drawTile(value, rowIndex, colIndex)
+
+    tiles.toFront()
+
+def generateNewTile():
+    newSpotFound = False
+
+    #### START OF BLOCK GENERATE_TILE ####
+
+    # Loop until a new spot has been found to place a tile.
+    ### Place Your Code Here ###
+    while newSpotFound == False:
+    # Each pass of the loop, pick a random cell by choosing the row and col
+    # (in that order to autograde correctly).
+    ### Place Your Code Here ###
+        row = randrange(0,4)
+        col = randrange(0,4)
+    # If row, col give an empty cell, set its label to 2 and end the loop.
+    ### Place Your Code Here ###
+        if app.board[row][col] == None:
+            app.board[row][col] = 2
+            newSpotFound = 2
+    #### END OF BLOCK ####

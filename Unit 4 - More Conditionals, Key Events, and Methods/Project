@@ -1,0 +1,196 @@
+'''
+Author: Roy Gutta
+Creation Date: 11/9/23
+Last Modified: 11/30/23
+Project Description:
+My project is Halloween themed because we are in November. 
+It is a game where the overall goal is to find the secret exit
+and free the human.
+Instructions:
+Move the candy bar around the screen until you find the exit and free the human.
+By pressing the mouse you move the candy bar.
+If you need help press the help button.
+Once the candy bar is in the exit area a message will say "you win" and the
+human will say "thanks".
+Rubric Item:
+Function 1 defined: Line 135
+Function 1 called: Line 147 & Line 157
+Function 2 defined with parameters: Line 130
+Function 2 helper function called within function: Line 156
+onMousePress: Line 163
+onMouseRelease: Line 175
+onMouseMove: Line 181
+onMouseDrag: Line 189
+Property 1 changed: Line 126
+Property 2 changed: Line 159
+Method 1 used: Line 192
+Method 2 used: Line 184
+'''
+
+#app properties
+app.background = 'dimgray'
+
+#objects
+
+#candy
+candy = Rect(50, 50, 50, 25, fill='blue')
+candyLabel = Label('CANDY', 75, 62.5, fill = 'red', italic=True, bold = True, border='white', borderWidth = 1)
+
+#room
+Rect(25, 25, 350, 350)
+
+#thoughtbubbles
+humanThoughtBubbleOne = Circle(137, 223, 5, fill = 'white', border='black', borderWidth = 0.5)
+humanThoughtBubbleTwo = Circle(155, 217, 7, fill = 'white', border = 'black', borderWidth = 0.5)
+humanThought = Oval(200, 213, 70, 50, fill ='white', border = 'black')
+pumpkinThoughtBubbleOne = Circle(241, 89, 5, fill = 'white', border = 'black', borderWidth = 0.5)
+pumpkinThoughtBubbleTwo = Circle(259, 83, 7, fill = 'white', border = 'black', borderWidth = 0.5)
+pumpkinThought = Oval(320, 79, 110, 50, fill = 'white', border = 'black')
+
+#exit
+exit = Rect(155, 333, 90, 42, fill ='grey', opacity = 1)
+
+#object properties/methods
+
+#makes the candy always in the front
+candy.toFront()
+candyLabel.toFront()
+
+#groups
+
+#pumpkin
+drawPumpkin = Group(
+        Oval(150, 125, 170, 135, fill=rgb(255, 100, 0)),
+        Polygon(145, 59, 162, 38, 175, 35, 155, 58, fill = 'green', border = 'green', borderWidth = 10)
+        )
+firstFace = Group(
+        Oval(115, 96, 50, 35, fill=rgb(255, 215, 0), opacity = 75, rotateAngle = -40),
+        Oval(185, 96, 50, 35, fill=rgb(255, 215, 0), opacity = 75, rotateAngle = 40),
+        Polygon(150, 110, 138, 131, 164, 131, fill=rgb(255, 215, 0), opacity = 75),
+        Arc(150, 145, 125, 75, 0, 90, rotateAngle = 180, fill=rgb(255, 215, 0), opacity = 75),
+        Arc(150, 145, 125, 75, 90, 90, fill=rgb(255, 215, 0), opacity = 75)
+        )
+secondFace = Group(
+        Polygon(134, 122, 97, 92, 87, 122, fill=rgb(255, 215, 0), opacity = 75),
+        Polygon(166, 122, 203, 92, 213, 122, fill=rgb(255, 215, 0), opacity = 75),
+        Polygon(150, 110, 138, 131, 164, 131, fill=rgb(255, 215, 0), opacity = 75),
+        Polygon(87, 144, 114, 170, 114, 160, 126, 160, 126, 170, 168, 170, 168, 160, 180, 160, 180, 170, 213, 144, 154, 144, 154, 154, 142, 154, 142, 144,  fill=rgb(255, 215,0), opacity = 75)
+        )
+#ghost
+drawGhost = Group(
+    Arc(300, 200, 125, 120, 0, 90, fill='white'),
+    Arc(300, 200, 125, 120, 90, 90, fill='white', rotateAngle = 180),
+    Rect(238, 200, 125, 95, fill = 'white'),
+    Polygon(238, 295, 238, 318, 269, 300, 300, 318, 334, 300, 363, 318, 363, 295, fill = 'white'),
+    Oval(269, 175, 10, 13, fill='black'),
+    Oval(334, 175, 10, 13, fill = 'black'),
+    Circle(300, 200, 7, fill = 'black')
+    )
+#human
+drawHuman = Group(
+        Circle(100, 220, 23, fill='gray'),
+        Line(100, 243, 100, 317, fill = 'gray'),
+        Line(100, 317, 75, 357, fill = 'gray'),
+        Line(100, 317, 125, 357, fill = 'gray')
+        )
+drawHumanArmUp = Group(
+    Line(100, 269, 125, 256, fill = 'gray'),
+    Line(100, 269, 75, 256, fill = 'gray')
+    )
+drawHumanArmDown = Group(
+    Line(100, 269, 125, 282, fill = 'gray'),
+    Line(100, 269, 75, 282, fill = 'gray')
+    )
+drawHumanFace = Group(
+        Circle(90, 215, 5, fill='white', border='black', borderWidth=2),
+        Circle(110, 215, 5, fill='white', border='black', borderWidth=2),
+        Polygon(92, 229, 100, 231, 108, 229)
+        )
+
+#group properties
+
+#makes the arms start up        
+drawHumanArmDown.visible = False
+#makes the second face the starting face of the pumpkin
+firstFace.visible = False
+
+#makes the arms start up        
+drawHumanArmDown.visible = False
+#makes the second face the starting face of the pumpkin
+firstFace.visible = False
+
+# helper functions
+
+def dropCandy(mouseX, mouseY):
+    #makes the candy appear wherever the mouse is
+    candy.centerX = mouseX
+    candy.centerY = mouseY
+    candyLabel.centerX = mouseX
+    candyLabel.centerY = mouseY
+def drawEndScreen(boxColor, message, messageColor):
+    #makes the end screen appear and stops the app
+    Rect(55, 155, 290, 90, fill=boxColor, border=messageColor, borderWidth=10)
+    Label(message, 200, 200, fill=messageColor, size=40)
+    app.stop()
+def drawHumanWord(humanWord):
+    #draws the word in the human thought bubble
+    Label(humanWord, humanThought.centerX, humanThought.centerY + 15, fill = 'red', bold=True, italic = True)
+def drawPumpkinWord(pumpkinWord):
+    #draws the word in the pumpkin thought bubble
+    Label(pumpkinWord, pumpkinThought.centerX, pumpkinThought.centerY, fill ='red', bold = True, italic = True, size = 10)
+def Help(mouseX, mouseY):
+    #makes the pumpkin thought bubble say find exit to win when help is pressed
+    if humanThought.hits(mouseX, mouseY) == True:
+        drawPumpkinWord('Find the Exit to Win')
+        
+#makes the human word say help        
+drawHumanWord('Help!')
+
+#function     
+#main
+
+def GameEnd():
+    #shows the end screen saying you win if the candy hits the exit and changes
+    #the human word to thanks
+    if (exit.hits(candy.centerX, candy.centerY) == True):
+        drawEndScreen('honeydew', 'YOU WIN!', 'green')
+        drawHumanWord('THANKS!')
+        exit.fill ='yellow'
+        exit.opacity = 75
+        
+#events
+
+def onMousePress(mouseX, mouseY):
+    #changes the faces of the pumpkin and shows the pumpkin word when help is 
+    #pressed
+    if firstFace.visible == True:
+        firstFace.visible = False
+        secondFace.visible = True
+        secondFace.toFront()
+    elif secondFace.visible == True:
+        secondFace.visible = False
+        firstFace.visible = True
+        firstFace.toFront()
+    Help(mouseX, mouseY)
+def onMouseRelease(mouseX, mouseY):
+    #calls the dropCandy helper function which makes the candy appear wherever
+    #the mouse is released and also ends the game if the candy is released at 
+    #the exit
+    dropCandy(mouseX, mouseY)
+    GameEnd()
+def onMouseMove(mmousX, mouseY):
+    #when you move the mouse it makes the human wave his arms
+    if drawHumanArmUp.visible == True:
+        drawHumanArmUp.visible = False
+        drawHumanArmDown.visible = True
+    elif drawHumanArmDown.visible == True:
+        drawHumanArmDown.visible = False
+        drawHumanArmUp.visible = True
+def onMouseDrag(mouseX, mouseY):
+    #when you drag the mouse it flickers the ghost
+    if drawGhost.visible == True:
+        drawGhost.toBack()
+        drawGhost.visible = False
+    elif drawGhost.visible == False:
+        drawGhost.visible = True
+        drawGhost.toFront()

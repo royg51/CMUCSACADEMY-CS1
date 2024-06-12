@@ -1,0 +1,57 @@
+app.background = 'black'
+app.stepsPerSecond = 15
+
+Rect(200, 225, 500, 500, fill=gradient('lime', 'black', 'black'), opacity=80,
+     align='center')
+
+Label('Scanning for ships...', 200, 25, fill='white', size=20)
+
+scanner = Group(
+    Circle(200, 225, 10, fill='green')
+    )
+scanLine = Line(200, 50, 200, 400, fill='white', lineWidth=1)
+
+signals = Group()
+
+def drawOuterScanner():
+    # Draw the rings of the scanner, and add them to the scanner group.
+    ### Place Your Code Here ###
+    scanner.add(Circle(200, 225, 30, fill = None, border = 'green'))
+    scanner.add(Circle(200, 225, 60, fill = None, border = 'green'))
+    scanner.add(Circle(200, 225, 90, fill = None, border = 'green'))
+    scanner.add(Circle(200, 225, 120, fill = None, border = 'green'))
+    scanner.add(Circle(200, 225, 150, fill = None, border = 'green'))
+    scanner.add(Circle(200, 225, 180, fill = None, border = 'green'))
+
+drawOuterScanner()
+
+def drawShipAndSignals(x, y, radius):
+    # Draw the red circles around the ship and add the circles to the signals
+    # group. The radius of each circle is half of that of the next largest
+    # circle.
+    ### (HINT: Use a while loop and integer divide the radius in 2 each time.)
+    ### Place Your Code Here ###
+    while radius > 1:
+        signals.add(Circle(x, y, radius, fill = None, border = 'red', opacity = 70))
+        radius/=2
+    # ship
+    Oval(x, y, randrange(5, 20), randrange(5, 20), fill='steelBlue')
+
+def onMousePress(mouseX, mouseY):
+    if (scanner.contains(mouseX, mouseY) == True):
+        drawShipAndSignals(mouseX, mouseY, randrange(20, 100))
+
+def onStep():
+    scanLine.rotateAngle += 3
+
+    # Increases the radius of each signal.
+    for signal in signals:
+        signal.radius *= 1.05
+
+        # Removes signals that are too large and add a new one.
+        if (signal.radius >= 75):
+            signals.remove(signal)
+            signals.add(
+                Circle(signal.centerX, signal.centerY, 5, fill=None,
+                       border='red', opacity=70)
+                )

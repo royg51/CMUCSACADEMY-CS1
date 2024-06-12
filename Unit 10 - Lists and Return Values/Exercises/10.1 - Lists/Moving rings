@@ -1,0 +1,51 @@
+app.background = 'black'
+
+app.numRings = 0
+app.ringList = [ ]
+
+def drawCircles(n):
+    app.numRings = n
+
+    # Creates n rings.
+    for index in range(n):
+        # Every second ring should be thin.
+        if (index % 2 == 1):
+            width = 3
+        else:
+            width = 5
+        angle = 18 * index
+
+        # Gets the center coordinate of the ring by using the angle
+        # and the center of the canvas.
+        centerX, centerY = getPointInDir(200, 200, angle, 60)
+
+        # Adds the ring to the rings group.
+        rings.add(
+            Circle(centerX, centerY, 60, fill=None, border='mediumAquamarine',
+                   borderWidth=width)
+            )
+
+rings = Group()
+drawCircles(20)
+app.ringList = rings.children
+
+def onKeyHold(keys):
+    borderColor = gradient('pink', 'hotPink', start='top')
+
+    # For every other ring, set the border fill to borderColor and increase
+    # or decrease the radius depending on if 'up' or 'down' is held.
+    ### (HINT: The list app.ringList contains every ring in the
+    #          rings group!)
+    ### (HINT: Don't let the ring radius get below 5.)
+    ### Place Your Code Here ###
+    for i in range(len(app.ringList)):
+        if i%2 == 0:
+            app.ringList[i].border = borderColor
+            if 'up' in keys:
+                app.ringList[i].radius += 5
+            elif 'down' in keys and app.ringList[i].radius > 5:
+                app.ringList[i].radius -= 5
+def onKeyRelease(key):
+    # Resets all the ring borders to white.
+    for ring in app.ringList:
+        ring.border = 'mediumAquamarine'

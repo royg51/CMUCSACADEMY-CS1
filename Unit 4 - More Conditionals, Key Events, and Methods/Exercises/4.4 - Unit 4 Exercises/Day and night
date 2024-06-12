@@ -1,0 +1,40 @@
+app.background = gradient('deepSkyBlue', 'lightBlue', start='top')
+
+sun = Circle(200, 100, 50, fill='yellow')
+moon = Circle(300, 100, 50, fill=gradient('gainsboro', 'white'), opacity=70,
+              visible=False)
+ground = Rect(0, 300, 400, 100, fill='mediumSeaGreen')
+
+def changeFillsAndMoon(newSkyFill, newSunFill, newGroundFill, showMoon):
+    app.background = newSkyFill
+    sun.fill = newSunFill
+    ground.fill = newGroundFill
+
+    # Depending on the showMoon input parameter, change the visibility of the moon.
+    ### Place Your Code Here ###
+    if mouseY > 350:
+        moon.visible = True
+def onMouseMove(mouseX, mouseY):
+    sun.centerX = mouseX
+    sun.centerY = mouseY
+
+    # Change the fill of the sky. Also change the moon's visibility if the
+    # sun has set.
+    ### (HINT: When it is night, the fill of the sun is None.)
+    ### Place Your Code Here ###
+    if sun.centerY <=  100:
+        app.background = 'lightSkyBlue'
+        moon.visible = False
+    if sun.centerY > 100:
+        app.background = gradient('deepSkyBlue', 'lightBlue', start='top')
+        moon.visible = False
+    if sun.centerY > 250:
+        app.background = gradient('skyBlue', 'lightPink', start = 'top')
+        ground.fill = 'seaGreen'
+        sun.fill = 'gold'
+        moon.visible = False
+    if sun.centerY > 350:
+        sun.fill = None
+        app.background = gradient('black', 'midnightBlue', start = 'top')
+        moon.visible=True
+        ground.fill = 'darkGreen'

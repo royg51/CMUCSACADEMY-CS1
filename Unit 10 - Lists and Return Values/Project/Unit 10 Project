@@ -1,0 +1,184 @@
+'''
+Author: Roy Gutta
+Creation Date: 3/21/24
+Last Modified: 4/15/24
+Project Description:
+My project allows the user to create and order a pizza. The pizza can have up to
+five toppings
+Instructions: When you are ready to order, click on the order pizza and it will 
+prompt you for different toppings, sauce, and crust. Then when it looks good, 
+click Bake.
+Credits:Raj Gutta(Dad) and Rajitha Gutta(Mom)
+Updates: To create the bake screen
+Rubric Item:
+String List: Line 69
+app.getTextInput: Line 65
+String Helper Variable: Line 68
+append(): Line 70
+Function Return: Line 29
+For Loop: Line 169
+While Loop: Line 52
+'''
+def ReturningCustomer():
+    #decides the percent dicount the customer will get to use during his next
+    #visit
+    repeatcustomer = app.getTextInput("Is this your first time visiting our restaurant? 'Yes' or 'No'? ")
+    if repeatcustomer == 'Yes':
+        y = 5
+        x = y * 2
+        return x
+    else:
+        y = 5
+        return y
+def WelcomeScreen():
+    #draws the first screen that users see when they run the program
+    Label("Welcome to Papa's Pizzeria!", 200, 150, fill = 'black', border = 'gray', size = 40, font = 'grenze')
+    Label('Please click the button below', 200, 190, fill = 'black', border = 'gray', size = 20, font = 'grenze')
+    Label('and follow the instructions to create your own pizza: ', 200, 220, fill = 'black', border = 'gray', size = 20, font = 'grenze')
+    button = Rect(150, 260, 100, 30, fill ='red', border = 'black', visible = True)
+    Label('Order Pizza', button.centerX, button.centerY, fill = 'black', border = 'gray', size = 14, font = 'monospace')
+def CreateFloor():
+    #draws the black foor on the page where the pizza is baking
+    Rect(0, 300, 400, 400)
+WelcomeScreen()
+def onMousePress(mouseX, mouseY):
+    #operates the buttons, when the user clicks a certain button or does a
+    #certain thing it prompts the user for input, asks the user for type of 
+    #pizza and shows the baking screen as well as the %discount
+    x = 0
+    x+=10
+    if mouseX > 150 and mouseX < 250 and mouseY>260 and mouseY < 290:
+        size = app.getTextInput('How big do you want your pizza: 10", 12", 14", 16"')
+        while size.isalpha() == True and x < 100000000000000000:
+            size = app.getTextInput('How big do you want your pizza: 10", 12", 14", 16"')
+        crust = app.getTextInput("Enter the type of crust you would like: 'Thin Crust', 'Cheesy Crust', 'Garlic Crust', 'Normal'")
+        while crust.isdigit() == True and x < 100000000000000000:
+            crust = app.getTextInput("Enter the type of crust you would like: 'Thin Crust', 'Cheesy Crust', 'Garlic Crust', 'Normal'")
+        sauce = app.getTextInput("Enter what sauce you would want in this format: 'Barbecue Sauce', 'Normal'")
+        while sauce.isdigit() == True and  x < 100000000000000000:
+            sauce = app.getTextInput("Enter what sauce you would want in this format: 'Barbecue Sauce', 'Normal'")
+        numberoftoppings = app.getTextInput("Enter the number of toppings you want up to 5")
+        while numberoftoppings.isalpha() == True or int(numberoftoppings) > 5 and x < 100000000000000000:
+                numberoftoppings = app.getTextInput("Enter the number of toppings you want up to 5")
+        availabletoppings = ['Extra Cheese', 'Chicken', 'Pepperoni', 'Pineapples', 'Olives', 'Meatballs', 'Ham', 'Sausage', 'Bacon', 'Jalapeno Peppers', 'Onions', 'Mushrooms', 'Green Peppers']
+        for i in range(int(numberoftoppings)):
+            toppings = app.getTextInput("Enter " + str(numberoftoppings) + " toppings you want on your pizza up to the number you chose from the following: " + str(availabletoppings))
+            while toppings.isdigit() == True and x < 100000000000000000:
+                for i in range(int(numberoftoppings)):
+                    toppings = app.getTextInput("Please renter " + str(numberoftoppings) + " toppings you want on your pizza up to the number you chose from the following: " + str(availabletoppings))
+        selectedtoppings = [ ]
+        selectedtoppings.append(toppings)
+        Rect(0, 0, 400, 300, fill = 'white')
+        CreateFloor()
+        Rect(220, 215, 180, 85, fill = 'gray')
+        Rect(350, 50, 50, 175, fill  = 'gray')
+        Rect(220, 50, 140, 50, fill = 'gray')
+        Polygon(220, 215, 241.66, 190, 263.333, 215, fill = gradient('yellow', 'orange', 'red', 'red', start = 'bottom'))
+        Polygon(263.333, 215, 284.99, 190, 306.666, 215, fill = gradient('yellow', 'orange', 'red', 'red', start = 'bottom'))
+        Polygon(306.666, 215, 328.332, 190, 350, 215, fill = gradient('yellow', 'orange', 'red', 'red', start = 'bottom'))
+        Rect(220, 180, 130, 10, fill = 'gray')
+        if sauce == 'Barbecue Sauce':
+            color = gradient(rgb(59, 14, 22), rgb(74, 19, 12), rgb(87, 30, 26))
+        elif sauce == 'Normal':
+            color = rgb(178, 24, 7)
+        if crust == 'Thin Crust':
+            Circle(110, 155, (int(size) *6) + 2, fill = rgb(243, 205, 106))
+        elif crust == 'Cheesy Crust':
+            Circle(110, 155, (int(size) * 6) + 4, fill = rgb(243, 205, 106))
+        elif crust == 'Garlic Crust':
+            Circle(110, 155, (int(size)*6) + 4, fill = rgb(243, 205, 106))
+        else:
+            Circle(110, 155, (int(size)*6) + 3.25, fill = rgb(243, 205, 106))
+            pizza = Circle(110, 155, int(size) * 6, fill = color)
+            innerpizza = Circle(pizza.centerX, pizza.centerY, (int(size)*6) - 10, visible = False)
+            y = int(size)
+        if 'Extra Cheese' in selectedtoppings:
+            for extracheese in range(y):
+                extracheeseSpot=randrange(innerpizza.left, innerpizza.right)
+                extracheeseSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(extracheeseSpot,extracheeseSpot2)):
+                    Rect(extracheeseSpot-1.5, extracheeseSpot2-5, 3, 10, fill = 'white')
+        if 'Chicken' in selectedtoppings:
+            for chicken in range(y):
+                ChickenSpot=randrange(innerpizza.left,innerpizza.right)
+                ChickenSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(ChickenSpot,ChickenSpot2)):
+                    Rect(ChickenSpot-3.5, ChickenSpot2-5.5, 7, 11, fill = rgb(249, 213, 144))
+        if 'Pepperoni' in selectedtoppings:
+            for pepperoni in range(y):
+                pepperoniSpot=randrange(innerpizza.left,innerpizza.right)
+                pepperoniSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(pepperoniSpot,pepperoniSpot2)):
+                    Circle(pepperoniSpot, pepperoniSpot2, int(size), fill = rgb(170, 68, 0))
+        if 'Pineapples' in selectedtoppings:
+            for pineapples in range(y):
+                pineapplesSpot=randrange(innerpizza.left,innerpizza.right)
+                pineapplesSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(pineapplesSpot,pineapplesSpot2)):
+                    Rect(pineapplesSpot-3.5, pineapplesSpot2-5.5, 7, 11, fill = gradient(rgb(255, 255, 101), rgb(255, 225, 45), start = 'top'))
+        if 'Olives' in selectedtoppings:
+            for olives in range(y):
+                olivesSpot=randrange(innerpizza.left, innerpizza.right)
+                olivesSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(olivesSpot,olivesSpot2)):
+                    Circle(olivesSpot, olivesSpot2, int(size) - 5, fill = None, border = 'black', borderWidth = 4)
+        if 'Meatballs' in selectedtoppings:
+            for meatballs in range(y):
+                meatballsSpot=randrange(innerpizza.left,innerpizza.right)
+                meatballsSpot2=randrange(innerpizza.top, innerpizza.bottom)
+                if (pizza.contains(meatballsSpot,meatballsSpot2)):
+                    Circle(meatballsSpot, meatballsSpot2, int(size) - 3, fill = rgb(123, 78, 14))
+        if 'Ham' in selectedtoppings:
+            for ham in range(y):
+                hamSpot=randrange(innerpizza.left,innerpizza.right)
+                hamSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(hamSpot,hamSpot2)):
+                    Rect(hamSpot-2.5, hamSpot2-3.5, 5, 7, fill = rgb(219, 158, 166), rotateAngle = randrange(0 , 360))
+        if 'Sausage' in selectedtoppings:
+            for sausage in range(y):
+                sausageSpot=randrange(innerpizza.left,innerpizza.right)
+                sausageSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(sausageSpot,sausageSpot2)):
+                    Oval(sausageSpot, sausageSpot2, int(size) - 3, int(size) - 1, fill = rgb(123, 78, 14))
+        if 'Bacon' in selectedtoppings:
+            for bacon in range(y):
+                baconSpot=randrange(innerpizza.left,innerpizza.right)
+                baconSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(baconSpot,baconSpot2)):
+                    Rect(baconSpot-(0.5*int(size)), baconSpot2-(0.5*int(size)), int(size), int(size), fill = rgb(170, 68, 0))
+        if 'Jalapeno Peppers' in selectedtoppings:
+            for jalapenopeppers in range(y):
+                jalapenoSpot=randrange(innerpizza.left,innerpizza.right)
+                jalapenoSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(jalapenoSpot,jalapenoSpot2)):
+                    Circle(jalapenoSpot, jalapenoSpot2, int(size) - 3, fill = None, border = rgb(84, 128, 66), borderWidth = 3)
+        if 'Onions' in selectedtoppings:
+            for onions in range(y):
+                onionSpot=randrange(innerpizza.left, innerpizza.right)
+                onionSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(onionSpot,onionSpot2)):
+                    Rect(onionSpot-2, onionSpot2-5.5, 4, 11, fill = rgb(137, 68, 82))
+        if 'Mushrooms' in selectedtoppings:
+            for mushrooms in range(y):
+                mushroomSpot=randrange(innerpizza.left,innerpizza.right)
+                mushroomSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(mushroomSpot,mushroomSpot2)):
+                    head = Arc(mushroomSpot, mushroomSpot2, 10, 7, 0, 180, rotateAngle = -90, fill = rgb(216, 204, 192))
+                    tail = Rect(head.left + 2, head.bottom, 3, 5, fill = rgb(216, 204, 192))        
+        if 'Green Peppers' in selectedtoppings:
+            for greenpeppers in range(y):
+                greenSpot=randrange(innerpizza.left,innerpizza.right)
+                greenSpot2=randrange(innerpizza.top,innerpizza.bottom)
+                if (pizza.contains(greenSpot,greenSpot2)):
+                    Rect(greenSpot-2, greenSpot2-5.5, 4, 11, fill = rgb(84, 128, 66))
+    bakebutton = Rect(50, 260, 120, 30, fill ='red', border = 'black')
+    Label('Looks good, Bake', bakebutton.centerX, bakebutton.centerY, fill = 'black', border = 'black', size = 14, font = 'arial')
+    if mouseX > 50 and mouseX < 170 and mouseY>260 and mouseY < 290:
+        Rect(0, 0, 220, 300, fill = 'white')
+        Label('Baking, please be patient!', 110, 115)
+        Rect(220, 170, 130, 10, fill = rgb(243, 205, 106))
+        Line(220, 170, 350, 170, fill = rgb(178, 24, 7))
+        coupondiscount = ReturningCustomer()
+        Label('Here is your ' + str(coupondiscount) + ' % discount for your next visit: ', 105, 200, size = 10)
+        Rect(50, 220, 50, 25, fill = 'yellow')
+        Label(str(coupondiscount) + '% off', 70, 235)

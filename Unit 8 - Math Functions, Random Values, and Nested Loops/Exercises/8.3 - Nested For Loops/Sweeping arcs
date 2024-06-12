@@ -1,0 +1,20 @@
+app.background = 'black'
+
+arcs = Group()
+
+# Draw a 5x5 grid of equally-spaced arcs on the screen, and add the arcs to
+# the arcs group.
+### (HINT: Use a nested for loop to create the grid.)
+### (HINT: The initial sweep angle for each arc should be 180.)
+### Place Your Code Here ###
+for x in range(40, 400, 80):
+    for y in range(40, 400, 80):
+        a = Arc(x, y, 40, 40, 0, 180, fill = None, border = 'lime')
+        arcs.add(a)
+def onMouseMove(mouseX, mouseY):
+    # Change the sweep angle of each arc based on mouseX as long as mouseX is
+    # larger than 1.
+    ### (HINT: Scale the value of mouseX to go up to 360, instead of 400.)
+    ### Place Your Code Here ###
+    for arc in arcs:
+        arc.sweepAngle = mouseX/400 * 360

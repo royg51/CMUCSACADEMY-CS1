@@ -1,0 +1,87 @@
+app.background = 'mediumSeaGreen'
+app.stepsPerSecond = 100
+
+app.shotWasMade = False
+
+# background
+Line(0, 30, 100, 30, fill='white', lineWidth=4, opacity=90)
+Line(300, 30, 400, 30, fill='white', lineWidth=4, opacity=90)
+Line(0, 320, 400, 320, fill='white', lineWidth=3)
+Rect(40, 30, 320, 90, fill=None, border='white')
+Circle(200, 200, 12, fill='rosyBrown', opacity=50)
+Arc(200, 319, 240, 130, 90, 180, fill=None, border='white', borderWidth=3)
+
+goalie = Group(
+    Oval(200, 42, 15, 15, fill='peachPuff'),
+    Oval(190, 43, 5, 5, fill='peachPuff'),
+    Oval(210, 43, 5, 5, fill='peachPuff')
+    )
+goalie.caughtBall = False
+
+kicker = Group(
+    Oval(190, 320, 15, 15, fill='peachPuff'),
+    Oval(180, 320, 5, 5, fill='peachPuff'),
+    Oval(200, 320, 5, 5, fill='peachPuff')
+    )
+kicker.dy = -1
+
+ball = Circle(200, 200, 4, fill='white')
+ball.targetX = -1
+ball.inGoal = False
+
+def drawNet():
+    # Fix the loop to draw the net.
+    ### Fix Your Code Here ###
+    for x1 in range(100, 305, 5):
+        Line(x1, 0, x1 + 10, 32, fill='white', lineWidth=1)
+        Line(x1, 0, x1 - 10, 32, fill='white', lineWidth=1)
+
+drawNet()
+
+def reset():
+    ball.centerX = 200
+    ball.centerY = 200
+    ball.targetX = -1
+
+    kicker.centerY = 320
+    kicker.dy = -1
+
+    goalie.caughtBall = False
+    ball.inGoal = False
+
+def onKeyPress(key):
+    if ((ball.inGoal == True) or (goalie.caughtBall == True)):
+        reset()
+
+def onMouseMove(mouseX, mouseY):
+    if ((mouseX >= 100) and (mouseX <= 300)):
+        goalie.centerX = mouseX
+
+    if (goalie.caughtBall == True):
+        ball.centerX = goalie.centerX + 10
+        ball.centerY = goalie.centerY + 5
+
+def onStep():
+    kicker.centerY += kicker.dy
+
+    if (goalie.hitsShape(ball) == True):
+        goalie.caughtBall = True
+    elif ((ball.targetX != -1) and (ball.centerY >= 5)):
+        # Move the ball towards the target by 3 pixels.
+        ### (HINT: The target y is the top of the canvas.)
+        ### Place Your Code Here ###
+        angle = angleTo(ball.centerX, ball.centerY, ball.targetX, 0)
+        x,y = getPointInDir(ball.centerX, ball.centerY, angle, 3)
+        ball.centerX = x
+        ball.centerY = y
+
+    elif (ball.targetX != -1):
+        ball.inGoal = True
+
+    # When the kicker kicks the ball, stop moving the kicker and randomly pick
+    # where in the goal the ball will go and set the ball's target.
+    ### (HINT: The ball can go anywhere within x=100 and x=300, inclusive.)
+    ### Place Your Code Here ###
+    if kicker.hitsShape(ball):
+        kicker.dy  = 0
+        ball.targetX = randrange(100, 301)

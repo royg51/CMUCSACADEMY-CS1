@@ -1,0 +1,134 @@
+app.background = 'black'
+
+app.gameState = 'setup'
+
+# background
+Polygon(0, 80, 50, 50, 150, 50, 200, 80, 250, 50, 350, 50, 400, 80,
+        400, 320, 350, 350, 250, 350, 200, 320, 150, 350, 50, 350, 0, 320,
+        fill='mediumSeaGreen', border='limeGreen', borderWidth=6)
+Label('PLAYER', 100, 330, size=25, font='monospace')
+Label('ENEMY', 300, 330, size=25, font='monospace')
+
+instructions = Label('Click to place four ships of size two', 200, 94,
+                     fill='white', size=17, font='monospace', bold=True)
+
+def makeBoard(startX, startY):
+    rows = 8
+    cols = 8
+    gridSize = 24
+    board = makeList(rows, cols)
+    for row in range(rows):
+        for col in range(cols):
+            #### START OF BLOCK MAKE_BOARD ####
+
+            # Draw a rectangular cell for this row and column.
+            ### Fix Your Code Here ###
+            x0 = startX
+            y0 = startY
+            cell = Rect(x0 + (col*gridSize), y0 + (row*gridSize), gridSize, gridSize, fill = 'mediumBlue', border='white', borderWidth =1)
+
+            #### END OF BLOCK ####
+
+            # Sets the cell properties and add it to the board.
+            cell.status = 'ocean'
+            cell.row = row
+            cell.col = col
+            board[row][col] = cell
+
+    return board
+
+app.playerBoard = makeBoard(3, 110)
+app.enemyBoard = makeBoard(205, 110)
+app.shipPartsPlaced = 0
+app.lastClicked = None
+
+def findCell(x, y, board):
+    #### START OF BLOCK FIND_CELL ####
+
+    # Find the cell that the point (x, y) lies in.
+    ### (HINT: Try using the hits method on each cell!)
+    ### Place Your Code Here ###
+    rows = 8
+    cols = 8
+    for row in range(rows):
+        for col in range(cols):
+            cell = board[row][col]
+            if cell.hits(x, y):
+                return cell
+    #### END OF BLOCK ####
+
+    return None
+
+def isAdjacent(cell, cellClicked):
+    # Checks if two cells are adjacent.
+    clickedRow = cellClicked.row
+    clickedCol = cellClicked.col
+    cellRow = cell.row
+    cellCol = cell.col
+
+    #### START OF BLOCK IS_ADJACENT ####
+
+    # If either the rows are equal and the columns are within 1, or
+    # the columns are equal and the rows are within 1, they are adjacent.
+    ### Place Your Code Here ###
+    if clickedRow == cellRow and abs(clickedCol - cellCol) <= 1:
+        return True
+    if clickedCol == cellCol and abs(clickedRow - cellRow) <= 1:
+        return True
+    #### END OF BLOCK ####
+
+def isLegalShip(cell, board, numParts):
+    # If the location is not an ocean, it is not legal.
+    if ((cell == None) or (cell.status != 'ocean')):
+        return False
+
+    # Every ship has length 2 so if this is a new ship, it is legal.
+    if (numParts % 2 == 0):
+        app.lastClicked = cell
+        return True
+    else:
+        # If we already placed the first part of a ship, make sure the second
+        # part is next to the first.
+        if (isAdjacent(cell, app.lastClicked) == True):
+            return True
+        else:
+            return False
+
+def placePlayer(mouseX, mouseY):
+    cell = findCell(mouseX, mouseY, app.playerBoard)
+
+    #### START OF BLOCK PLACE_PLAYER ####
+
+    # Place a player ship in the cell if it will be a legal move.
+    ### (HINT: To place a ship, change the cell's status to 'hiddenShip'.
+    #          Also change the fill and increment app.shipPartsPlaced.)
+    ### Place Your Code Here ###
+    if isLegalShip(cell, app.playerBoard, app.shipPartsPlaced):
+        cell.status = 'hiddenShip'
+        cell.fill = 'grey'
+        app.shipPartsPlaced += 1
+    #### END OF BLOCK ####
+
+def placeEnemies():
+    # Randomly places enemy ships until there are 4 ships of size 2 on the board.
+    numShipParts = 0
+    while (numShipParts < 8):
+        randomRow = randrange(0, 8)
+        randomCol = randrange(0, 8)
+        randomCell = app.enemyBoard[randomRow][randomCol]
+        if (isLegalShip(randomCell, app.enemyBoard, numShipParts) == True):
+            # Places the ship.
+            randomCell.status = 'hiddenShip'
+            numShipParts += 1
+
+def onMousePress(mouseX, mouseY):
+    # If on the start screen, place ship parts until the player has
+    # 4 ships. Then creates 4 enemy ships.
+    if (app.gameState == 'setup'):
+        placePlayer(mouseX, mouseY)
+        if (app.shipPartsPlaced == 8):
+            placeEnemies()
+
+            # Enters playing mode.
+            app.gameState = 'play'
+            instructions.value = 'Guess the location of the enemy ships'

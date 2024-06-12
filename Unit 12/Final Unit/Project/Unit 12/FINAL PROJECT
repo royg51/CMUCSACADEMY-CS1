@@ -1,0 +1,826 @@
+'''
+Name: Roy Gutta
+Version 1 Date: 5/7/24
+Project Description:
+My project is meant to be a game, however it might not be fully finished due to 
+time. You should be able to play against either a computer or against a friend.
+Eventually, you should be to shoot unlimited ammo and if a bullet hits another
+user or the AI their health should go down. There are also obstacles to avoid in 
+each mode. Each time the user beats the AI, the level should increase.
+Instructions:
+If going against the AI Player1 uses WASD to move and E to shoot.
+If going against a Friend Player1 controls remain the same and Player2 uses the
+arrow keys to move and / to shoot. Pressing I will open up the instructions and
+pause the game and pressing I again will close the instructions and unpause the
+game.
+Version 2 Date: 5/7/24
+Peer Name:
+Christian Sanworanart
+Peer Feedback and Changes:
+Suggested adding an app property "endMessageDrawn" to prevent game over text
+from being drawn every step once the game ends
+Version 3 Date: 5/7/24
+Teacher Feedback Changes:
+
+Last Modified Date: 5/8/24
+Rubric Items:
+Shapes/objects: Line 87
+Shape/object properties changed: Line 507
+Groups: Line 109
+Group properties changed: Line 615
+onStep: Line 791
+onMousePress: Line 775
+onKeyPress: Line 543
+Coumpound conditionals: Line 353
+Custom Properties: Line 55
+Helper Functions Defined: Line 251
+Helper Functions Called: Line 806
+Local Variables: Line 422
+For i in range: Line 238
+For loop Groups: Line 269
+Nested For Loops: Lines 370 and 371
+Random Values: Line 276
+If statements: Line 282
+Elif statements: Line 288
+Else statements: Line 548
+Motion: Line 458
+Input: Line 449
+List: Line 233
+Other Notes:
+Unit 12 not open at time of submission - 5/8/24
+Finished in sandbox on 5/8/24 
+'''
+#custom properties
+app.background = "darkGray"
+app.gameStart ="Off"
+app.shieldPlayer1 = 0
+app.shieldPlayer2 = 0
+app.normalShield = 50
+app.normalHealth = 100
+app.healthPlayer1 = 100
+app.healthPlayer2 = 100
+app.shootingP1 = False
+app.shootingP2 = False
+app.shootingAI = False
+app.healthAI = 100
+app.totalPlayer1 = app.healthPlayer1 + app.shieldPlayer1
+app.totalPlayer2 = app.healthPlayer2 + app.shieldPlayer2
+app.weaponPlayer1 = None
+app.weaponPlayer2 = None
+app.level = 6
+app.numberofShields = 1
+app.requiredShields = 1
+app.shieldsTimer1 = 50
+app.shieldsTimer2 = 50
+app.run = True
+app.gamePaused = "Off"
+app.gameStart = False
+app.gameEnd = False
+app.PVPMode = "Off"
+app.AIMode = "Off"
+app.numberOfPlatforms = 1
+app.endMessageDrawn = False
+app.shootingAI = False
+
+#objects
+#creates the health label saying player 1
+healthp1 = Label("Player 1 Health: ", 56, 16, visible = False)
+#creates the health label showing the actual player 1 health
+healthvaluep1 = Label(app.healthPlayer1, healthp1.centerX + 50, healthp1.centerY, visible = False)
+#creates the health label saying player 2
+healthp2 = Label("Player 2 Health: ", 334, 16, visible = False)
+#creates the health label showing the actual player 2 health
+healthvaluep2 = Label(app.healthPlayer2, healthp2.centerX + 50, healthp2.centerY, visible = False)
+#creates the health label saying AI Health
+healthAI = Label("AI Health: ", 344, 16, visible = False)
+#creates the health label showing the actual AI health
+healthvalueAI = Label(app.healthAI, healthAI.centerX + 40, healthAI.centerY, visible = False)
+#creates the shield label saying player 1 shield
+shieldp1 = Label("Player 1 Shield: ", 56, 36, visible = False)
+#creats the shield label that actually shows player 1's shield
+shieldvaluep1 = Label(app.shieldPlayer1, shieldp1.centerX + 50, shieldp1.centerY, visible = False)
+#creates the shield label saying player 1 shield
+shieldp2 = Label("Player 2 Shield: ", 334, 36, visible = False)
+#creats the shield label that actually shows player 2's shield
+shieldvaluep2 = Label(app.shieldPlayer2, shieldp2.centerX + 50, shieldp2.centerY, visible = False)
+
+#groups
+#creates the group that stores the falling obstacles
+obstacles = Group(
+        Rect(randrange(0, 350), randrange(0, 350), 50, 50, fill = None, border = "darkOrange", borderWidth = 5)
+    )
+#creates the group that stores the moving shields
+shields = Group(
+        RegularPolygon(100, 65, 20, 5, fill = 'blue')    
+    )
+#creates the group that stores the instrucions    
+instructions = Group (
+            Label("Instructions:", 200, 50, size = 25),
+            Label("WASD to move and 'E' to shoot for player 1.", 200, 78, size = 12.9, bold = True),
+            Label("If playing against another real player, arrow keys to move", 200, 93, size = 13, bold = True),
+            Label("and '/' to  shoot.", 200, 108, size = 13, bold = True),
+            Label("Pressing I at any time to open up this page again, which will", 200, 123, size = 13, bold = True),
+            Label("automatically pause the current game if in one.", 200, 138, size = 13, bold = True),
+            Label("Pressing I again will close the instructions screen and", 200, 153, size = 13, bold = True),
+            Label("unpause the game.", 200, 168, size = 13, bold = True)
+            )
+#creates the group that stores the homescree
+homescreen = Group(
+    Label('Press "i" for game instructions', 200, 25, bold = True),
+    Label("Please choose if you would like to play against a friend or a computer: ", 200, 37, bold = True, size = 11),
+    Rect(75, 300, 100, 50, fill = "blue", border = "black"),
+    Rect(225, 300, 100, 50, fill = "red", border = "black"),
+    Label("Computer", 125, 325, size = 23),
+    Label("Friend", 275, 325, size = 23)
+    )
+#creates the group that stores the 2 platforms
+platforms = Group(
+    Rect(50, 300, 100, 50),
+    Rect(250, 300, 100, 50)
+    )
+#creates the group that makes player 1's body
+player1right = Group(
+    Circle(160, 60, 15),
+    Line(160, 75, 160, 110),
+    Line(160, 82.5, 185, 79),
+    Line(160, 82.5, 170, 88),
+    Line(170, 88, 185, 79),
+    Line(160, 110, 140, 129),
+    Line(160, 110, 180, 129)
+    )
+#creates the group that makes player 2's body
+player2left = Group(
+    Circle(160, 60, 15),
+    Line(160, 75, 160, 110),
+    Line(160, 82.5, 135, 79),
+    Line(160, 82.5, 150, 88),
+    Line(150, 88, 135, 79),
+    Line(160, 110, 140, 129),
+    Line(160, 110, 180, 129)
+    )
+#creates the group that makes the AI's body
+aileft = Group(
+    Circle(160, 60, 15),
+    Line(160, 75, 160, 110),
+    Line(160, 82.5, 135, 79),
+    Line(160, 82.5, 150, 88),
+    Line(150, 88, 135, 79),
+    Line(160, 110, 140, 129),
+    Line(160, 110, 180, 129)
+    )
+#creates the group that stores the parts for the start button on the AI screen
+startbuttonAI = Group(
+    Rect(130, 360, 140, 30, fill = 'green', border = "black"),
+    Label("Click Here To Start The Match", 200, 375, size = 10)
+    )
+#creates the group that stores the parts for the start button on the PVP screen
+startbuttonPVP = Group(
+    Rect(130, 360, 140, 30, fill = 'green', border = "black"),
+    Label("Click Here To Start The Match", 200, 375, size = 10)
+    )
+#creates the group that stores the parts for the gun of player 1
+gun1 = Group(
+    Rect(121, 235, 12, 35),
+    Rect(133, 235, 25, 12),
+    Line(133, 247, 139, 256),
+    Line(139, 256, 133, 260)
+    )
+#creates the group that stores the parts for the gun of player 2    
+gun2 = Group(
+    Rect(275, 235, 12, 35),
+    Rect(250, 235, 25, 12),
+    Line(275, 247, 269, 256),
+    Line(269, 256, 275, 260)
+    )
+#creates the group that stores the parts for the gun of the AI
+gunAI = Group(
+    Rect(275, 235, 12, 35),
+    Rect(250, 235, 25, 12),
+    Line(275, 247, 269, 256),
+    Line(269, 256, 275, 260)
+    )
+#creates the group that stores the bullets of player 1
+bulletsp1 = Group(
+    Rect(gun1.right + 15, gun1.centerY - 14, 17, 5, fill = "red", border = "black", borderWidth = 0.5)
+    )
+#creates the group that stores the bullets of player 2
+bulletsp2 = Group(
+    Rect(gun2.left - 30, gun2.centerY - 14, 17, 5, fill = "red", border = "black", borderWidth = 0.5)
+    )
+#creates the group that stores the bullets of the AI
+bulletsAI = Group(
+    Rect(gunAI.left - 30, gunAI.centerY - 14, 17, 5, fill = "red", border = "black", borderWidth = 0.5)
+    )
+#group-properties/methods
+obstacles.visible = False
+shields.visible = False
+instructions.visible = False
+homescreen.visible = True
+platforms.visible = False
+player1right.visible = False
+player2left.visible = False
+aileft.visible = False
+startbuttonAI.visible = False
+startbuttonPVP.visible = False
+gun1.visible = False
+gun2.visible = False
+gunAI.visible = False
+bulletsp1.visible = False
+bulletsp2.visible = False
+bulletsAI.visible = False
+#lists
+#stores who won
+whowon = [ ]
+#Helper Functions
+def AddMoreShieldsIfNeeded():
+    #if the # of shields don't meet the # of required shields then create
+    #more
+    for i in range(app.requiredShields):
+        if app.numberofShields < app.requiredShields:
+            shield = RegularPolygon(100, 65, 20, 5, fill = 'blue') 
+            app.numberofShields += 1
+            shields.add(shield)
+def ShowShields():
+    #makes the shields visible and at a random postion
+    AddMoreShieldsIfNeeded()
+    if app.numberofShields == app.requiredShields and (app.AIMode == "On" or app.PVPMode == "On"):
+        for blue in shields.children:
+            blue.centerX = randrange(20, 380)
+            blue.centerY = randrange(60, 340)
+        shields.visible = True
+def MoveShields():
+    #makes the shields move and if they touch the borders of the canvas they 
+    #move back to a random spot
+    for extra in shields.children:
+        if extra.visible == True and app.gameStart == True and (extra.right < 400 and extra.left > 0 and extra.top > 0 and extra.bottom < 400):
+            shields.centerX -= 1
+            shields.centerY += 1
+        if extra.visible == True and app.gameStart == True and (extra.right > 400 or extra.left < 0 or extra.top < 0 or extra.bottom > 400):
+            extra.centerX = randrange(20, 380)
+            extra.centerY = randrange(60, 340)
+def CheckGameStart():
+    #checks if either a AI game or a Friend game began
+    if app.gameStart == True:
+        startbuttonAI.visible = False
+        startbuttonPVP.visible = False
+        platforms.visible = False
+def autoMoveAI():
+    #automatically moves the AI randomly
+    for part in aileft.children:
+        if part.visible == True and app.gameStart == True and (part.right < 400 and part.left > 200 and part.top > 60 and part.bottom < 400):
+            aileft.centerX -= 1
+            aileft.centerY -= 1
+            gunAI.centerX = aileft.centerX - 41
+            gunAI.centerY = aileft.centerY
+        if part.visible == True and app.gameStart == True and (part.right > 400 or part.left < 200 or part.top < 60 or part.bottom > 400):
+            aileft.centerX = randrange(175, 350)
+            aileft.centerY = randrange(75, 359)
+            gunAI.centerX = aileft.centerX - 41
+            gunAI.centerY = aileft.centerY
+def GameEndAI():
+    #checks if the game in the AI mode has ended and shows the game over screen
+    if app.AIMode == "On" and (app.totalPlayer1 == 0 or app.healthAI == 0):
+        if (healthvalueAI.value > healthvaluep1.value) and app.AIMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            Label("Computer Wins", 200, 225, size = 25)
+            app.endMessageDrawn = True
+        elif (healthvalueAI.value < healthvaluep1.value) and app.AIMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            Label("Player 1 Wins", 200, 225, size = 25)
+            app.endMessageDrawn=True
+def GameEndPVP():
+    #checks if the game in the PVP mode has ended and shows the game over screen
+    if app.PVPMode == "On" and (app.totalPlayer1 == 0 or app.totalPlayer2 == 0):
+        if (healthvaluep2.value > healthvaluep1.value) and app.AIMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            Label("Player 2 Wins", 200, 225, size = 25)
+            app.gameStart = False
+            app.gameEnd = True
+            app.endMessageDrawn=True
+        elif (healthvaluep2.value < healthvaluep1.value) and app.AIMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            Label("Player 1 Wins", 200, 225, size = 25)
+            app.gameStart = False
+            app.gameEnd = True
+            app.endMessageDrawn=True
+def CheckIfP1HitAI():
+    #checks if a bullet from the AI hit the player and decreases the health
+    for bullet in bulletsAI.children:
+        for part in player1right.children:
+            if bullet.hitsShape(part) and app.AIMode == "On" and app.healthPlayer1 > 0 and app.gameStart == True:
+                app.healthPlayer1 = app.healthPlayer1 - 1
+                healthvaluep1.value = app.healthPlayer1
+def CheckIfP1HitPVP():    
+    #checks if a bullet from player 2 hit the player 1 and decreases the health
+    for bullet in bulletsp2.children:
+        for part in player1right.children:
+            if bullet.hitsShape(part) and app.PVPMode == "On" and app.healthPlayer1 > 0 and app.gameStart == True:
+                app.healthPlayer1 = app.healthPlayer1 - 1
+                healthvaluep1.value = app.healthPlayer1
+def CheckIfP2HitPVP():
+    #checks if a bullet from player 1 hit the player 2 and decreases the health
+    for bullet in bulletsp1.children:
+        for part in player2left.children:
+            if bullet.hitsShape(part) and app.PVPMode == "On" and app.healthPlayer2 > 0 and app.gameStart == True:
+                app.healthPlayer2 = app.healthPlayer2 - 1
+                healthvaluep2.value = app.healthPlayer2
+def CheckIfAIHit():
+    #checks if a bullet from player 1 hit the AI and decreases the health
+    for bullet in bulletsp1.children:
+        for part in aileft.children:
+            if bullet.hitsShape(part) and app.AIMode == "On" and app.healthAI > 0 and app.gameStart == True:
+                app.healthAI = app.healthAI - 1
+                healthvalueAI.value = app.healthAI
+def CheckIfObstaclesHitPlayer1AI():
+    #checks if a obstacle hit player 1 and decreases the health
+    #if the health of player 1 is 0 they checks if the game has ended
+    for obstacle in obstacles.children:
+        for part in player1right.children:
+            if obstacle.hitsShape(part) and app.AIMode == "On" and app.healthPlayer1 > 0 and app.gameStart == True:
+                app.healthPlayer1 = app.healthPlayer1 - 1
+                healthvaluep1.value = app.healthPlayer1
+    if app.healthPlayer1 == 0 and app.AIMode == "On":
+        GameEndAI()
+def CheckIfObstaclesHitPlayer1PVP():
+    #checks if a obstacle hit player 1 and decreases the health
+    #if the health of player 1 is 0 they checks if the game has ended
+    for obstacle in obstacles.children:
+        for part in player1right.children:
+            if obstacle.hitsShape(part) and app.PVPMode == "On" and app.healthPlayer1 > 0 and app.gameStart == True:
+                app.healthPlayer1 = app.healthPlayer1 - 1
+                healthvaluep1.value = app.healthPlayer1
+    if app.healthPlayer1 == 0 and app.PVPMode == "On":
+        GameEndPVP()
+def CheckIfObstaclesHitPlayer2PVP():
+    #checks if a obstacle hit player 2 and decreases the health
+    #if the health of player 2 is 0 they checks if the game has ended
+    for obstacle in obstacles.children:
+        for part in player2left.children:
+            if obstacle.hitsShape(part) and app.PVPMode == "On" and app.healthPlayer2 > 0 and app.gameStart == True:
+                app.healthPlayer2 = app.healthPlayer2 - 1
+                healthvaluep2.value = app.healthPlayer2
+    if app.healthPlayer2 == 0 and app.PVPMode == "On":
+        GameEndPVP()
+def Player1ShieldAI():
+    #forms and decreases the shield based on if player 1 got a shield
+    for part in player1right.children:
+        for shield in shields.children:
+            if shield.hitsShape(part) and app.AIMode == "On" and app.gameStart == True:
+                app.shieldPlayer1 = 50
+            elif app.shieldPlayer1 <= 50 and app.shieldPlayer1 > 0 and app.gameStart == True and app.AIMode == "On":
+                app.shieldPlayer1 -= 1
+                shieldvaluep1.value = app.shieldPlayer1
+            elif app.shieldPlayer1 == 0 and app.AIMode == "On" and app.gameStart == True:
+                app.shieldPlayer1 == 0
+                shieldvaluep1.value = app.shieldPlayer1
+def Player1ShieldPVP():
+    #forms and decreases the shield based on if player 1 got a shield
+    for part in player1right.children:
+        for shield in shields.children:
+            if shield.hitsShape(part) and app.PVPMode == "On" and app.gameStart == True:
+                app.shieldPlayer1 = 50
+            elif app.shieldPlayer1 <= 50 and app.shieldPlayer1 > 0 and app.gameStart == True and app.PVPMode == "On":
+                app.shieldPlayer1 -= 1
+                shieldvaluep1.value = app.shieldPlayer1
+            elif app.shieldPlayer1 == 0 and app.PVPMode == "On" and app.gameStart == True:
+                app.shieldPlayer1 == 0
+                shieldvaluep1.value = app.shieldPlayer1
+def Player2Shield():
+    #forms and decreases the shield based on if player 2 got a shield
+    for part in player2left.children:
+        for shield in shields.children:
+            if shield.hitsShape(part) and app.PVPMode == "On" and app.gameStart == True:
+                app.shieldPlayer2 = 50
+            elif app.shieldPlayer2 <= 50 and app.shieldPlayer2 > 0 and app.gameStart == True and app.PVPMode == "On":
+                app.shieldPlayer2 -= 1
+                shieldvaluep2.value = app.shieldPlayer2
+            elif app.shieldPlayer2 == 0 and app.PVPMode == "On" and app.gameStart == True:
+                app.shieldPlayer2 == 0
+                shieldvaluep2.value = app.shieldPlayer2
+def DecreasePlayer1ShieldAI():
+    #decreases the shield of player 1 over time even if he doesn't take damage
+    if app.shieldPlayer1== 50 and app.AIMode == "On":
+        app.shieldPlayer1 -= 1
+def DecreasePlayer1ShieldPVP():
+    #decreases the shield of player 1 over time even if he doesn't take damage
+    if app.shieldPlayer1== 50 and app.PVPMode == "On":
+        app.shieldPlayer1 -= 1
+def DecreasePlayer2ShieldPVP():
+    #decreases the shield of player 2 over time even if he doesn't take damage
+    if app.shieldPlayer2== 50 and app.PVPMode == "On":
+        app.shieldPlayer2 -= 1
+def GameEndAI():
+    #checks if the game has ended in the AI mode and shows the win screen
+    if app.AIMode == "On" and (healthvaluep1.value == 0 or healthvalueAI.value == 0):
+        if (healthvalueAI.value > healthvaluep1.value) and app.AIMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            aiwin = Label("Computer Wins", 200, 225, size = 25)
+            whowon.append(aiwin)
+            app.endMessageDrawn = True
+        elif (healthvaluep1.value > healthvalueAI.value) and app.AIMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            p1aiwin = Label("Player 1 Wins", 200, 225, size = 25)
+            whowon.append(p1aiwin)
+            app.endMessageDrawn=True
+def GameEndPVP():
+    #checks if the game has ended in the PVP mode and shows the win screen
+    if app.PVPMode == "On" and (healthvaluep1.value == 0 or healthvaluep2.value == 0):
+        if (healthvaluep2.value > healthvaluep1.value) and app.PVPMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            p2win = Label("Player 2 Wins", 200, 225, size = 25)
+            whowon.append(p2win)
+            app.endMessageDrawn = True
+        elif (healthvaluep1.value > healthvaluep2.value) and app.PVPMode == "On" and app.endMessageDrawn==False:
+            Rect(0, 150, 400, 100, fill = "green")
+            Label("GAME OVER!", 200, 175, size = 25)
+            p1pvpwin = Label("Player 1 Wins", 200, 225, size = 25)
+            whowon.append(p1pvpwin)
+            app.endMessageDrawn = True
+AddMoreShieldsIfNeeded()
+def GetUsersNamesPVP():
+    #gets the names of the users if playing PVP mode
+    user1 = app.getTextInput("Please enter the name of player 1: ")
+    user2 = app.getTextInput("Please enter the name of player 2: ")
+def GetUsersNameAI():
+    #gets the names of the user if playing AI mode
+    user1 = app.getTextInput("Please enter your name: ")
+def bulletsP1():
+    #moves the bullets of player 1
+    if app.shootingP1 == True:
+        bulletsp1.visible = True
+        bulletsp1.centerX += 50
+    if bulletsp1.centerX >= 400 and app.shootingP1 == True:
+        bulletsp1.centerX = gun1.centerX
+        bulletsp1.centerY = gun1.centerY - 16
+        bulletsp1.visible = True
+        bulletsp1.centerX += 50
+def bulletsP2():
+    #moves the bullets of player 2
+    if app.shootingP2 == True:
+        bulletsp2.visible = True
+        bulletsp2.centerX -= 50
+    if bulletsp2.centerX <= 0 and app.shootingP2 == True:
+        bulletsp2.centerX = gun2.centerX
+        bulletsp2.centerY = gun2.centerY - 16
+        bulletsp2.visible = True
+        bulletsp2.centerX -= 50
+def bullAI():
+    #moves the bullets of the AI
+    app.shootingAI = True
+    if app.gameStart == True and app.AIMode == "On" and app.shootingAI == True:
+            bulletsAI.visible = True
+            bulletsAI.centerX -= 50
+    if bulletsAI.centerX <= 0 and app.shootingAI == True:
+        bulletsAI.centerX = gunAI.centerX
+        bulletsAI.centerY = gunAI.centerY - 16
+        bulletsAI.visible = True
+        bulletsAI.centerX -= 50
+        
+#Main functions
+def AIMode():
+    #main function one
+    #makes everything ready for AI mode to be run
+    if app.AIMode == "On":
+        app.background = "darkGray"
+        homescreen.visible = False
+        obstacles.visible = True
+        ShowShields()
+        GetUsersNameAI()
+        platforms.visible = True
+        aileft.bottom = 300
+        aileft.centerX = 300
+        player1right.bottom = 300
+        player1right.centerX = 100
+        aileft.visible = True
+        player1right.visible = True
+        startbuttonAI.visible = True
+        app.healthPlayer1 = 100
+        app.healthAI = 100
+        healthp1.visible = True
+        healthvaluep1.visible = True
+        shieldp1.visible = True
+        shieldvaluep1.visible = True
+        healthAI.visible = True
+        healthvalueAI.visible = True
+        gunAI.visible = True
+        gun1.visible = True
+def PVPMode():
+    #main function two
+    #makes everything ready for PVP mode to be run
+    if app.PVPMode == "On":
+        app.background = "darkGray"
+        homescreen.visible = False
+        obstacles.visible = True
+        ShowShields()
+        GetUsersNamesPVP()
+        platforms.visible = True
+        aileft.visible = False
+        player1right.bottom = 300
+        player1right.centerX = 100
+        player2left.bottom = 300
+        player2left.centerX = 300
+        player1right.visible = True
+        player2left.visible = True   
+        healthp1.visible = True
+        healthvaluep1.visible = True
+        shieldp1.visible = True
+        shieldvaluep1.visible = True
+        healthp2.visible = True
+        healthvaluep2.visible = True
+        shieldp2.visible = True
+        shieldvaluep2.visible = True
+        startbuttonPVP.visible = True
+        gun1.visible = True
+        gun2.visible = True
+#events
+def onKeyPress(key):
+    #checks if the users want to shoot, moves the players, and makes the 
+    #instructions screen turn on or off based on the keys the user presses
+    if key == "e" and app.gameStart == True and (app.AIMode == "On" or app.PVPMode == "On"):
+        app.shootingP1 = True
+    else:
+        app.shootingP1 = False
+    if key == "/" and app.gameStart == True and app.PVPMode == "On":
+        app.shootingP2 = True
+    else:
+        app.shootingP2 = False
+    if key == "w" and app.AIMode == "On" and app.gameStart == True and player1right.left >= -2 and player1right.right < 209 and player1right.top > 75 and player1right.bottom <= 415 and instructions.visible == False:
+        player1right.centerY -= 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "a" and app.AIMode == "On" and app.gameStart == True  and player1right.left >= 8 and player1right.right < 209 and player1right.top > 60 and player1right.bottom <= 415 and instructions.visible == False:
+        player1right.centerX -= 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "d" and app.AIMode == "On" and app.gameStart == True and player1right.left >= -2 and player1right.right < 168 and player1right.top > 60 and player1right.bottom <= 415  and instructions.visible == False:
+        player1right.centerX += 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "s" and app.AIMode == "On" and app.gameStart == True  and player1right.left >= -2 and player1right.right < 209 and player1right.top > 60 and player1right.bottom < 359 and instructions.visible == False:
+        player1right.centerY += 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "w" and app.PVPMode == "On" and app.gameStart == True  and player1right.left >= -2  and player1right.right < 209 and player1right.top > 75 and player1right.bottom <= 415 and instructions.visible == False:
+        player1right.centerY -= 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "a" and app.PVPMode == "On" and app.gameStart == True  and player1right.left >= 8 and player1right.right < 209 and player1right.top > 60 and player1right.bottom <= 415 and instructions.visible == False:
+        player1right.centerX -= 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "d" and app.PVPMode == "On" and app.gameStart == True and player1right.left >= -2 and player1right.right < 168 and player1right.top > 60 and player1right.bottom <= 415 and instructions.visible == False:
+        player1right.centerX += 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "s" and app.PVPMode == "On" and app.gameStart == True  and player1right.left >= -2 and player1right.right < 209 and player1right.top > 60 and player1right.bottom < 359 and instructions.visible == False:
+        player1right.centerY += 10
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "up" and app.PVPMode == "On" and app.gameStart == True and player2left.left > 201 and player2left.right <= 402 and player2left.top > 75 and player2left.bottom <= 415 and instructions.visible == False:
+        player2left.centerY -= 10
+        gun2.centerX = player2left.centerX - 41
+        gun2.centerY = player2left.centerY
+    if key == "left" and app.PVPMode == "On" and app.gameStart == True  and player2left.left > 211 and player2left.right <= 402 and player2left.top > 60 and player2left.bottom <= 415 and instructions.visible == False:
+        player2left.centerX -= 10
+        gun2.centerX = player2left.centerX - 41
+        gun2.centerY = player2left.centerY
+    if key == "right" and app.PVPMode == "On" and app.gameStart == True and player2left.left > 201 and player2left.right < 392 and player2left.top > 60 and player2left.bottom <= 415 and instructions.visible == False:
+        player2left.centerX += 10
+        gun2.centerX = player2left.centerX - 41
+        gun2.centerY = player2left.centerY
+    if key == "down" and app.PVPMode == "On" and app.gameStart == True and player2left.left > 201 and player2left.right <= 402 and player2left.top > 60 and player2left.bottom < 359 and instructions.visible == False:
+        player2left.centerY += 10
+        gun2.centerX = player2left.centerX - 41
+        gun2.centerY = player2left.centerY
+    if key == "s" and app.AIMode == "On" and app.gameStart == True and player1right.bottom >= 359:
+        player1right.bottom = 400
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "s" and app.PVPMode == "On" and app.gameStart == True and player1right.bottom >= 359:
+        player1right.bottom = 400
+        gun1.centerX = player1right.centerX + 41
+        gun1.centerY = player1right.centerY
+    if key == "down" and app.PVPMode == "On" and app.gameStart == True and player2left.bottom >= 359:
+        player2left.bottom = 400
+        gun2.centerX = player2left.centerX - 41
+        gun2.centerY = player2left.centerY
+    if key == 'i' and instructions.visible == False and app.AIMode == "On" and app.gameStart == False:
+        instructions.visible = True
+        app.gamePaused = "On"
+        obstacles.visible = False
+        shields.visible = False
+        app.background = 'black'
+        instructions.fill = 'white'
+        homescreen.visible = False
+        player1right.visible = False
+        aileft.visible = False
+        platforms.visible = False
+        gun1.visible = False
+        gun2.visible = False
+        gunAI.visible = False
+        startbuttonAI.visible = False
+        bulletsp1.visible = False
+        bulletsAI.visible = False
+    elif key == 'i' and instructions.visible == False and app.PVPMode == "On" and app.gameStart == False:
+        instructions.visible = True
+        app.gamePaused = "On"
+        obstacles.visible = False
+        shields.visible = False
+        app.background = 'black'
+        instructions.fill = 'white'
+        homescreen.visible = False
+        player1right.visible = False
+        player2left.visible = False
+        platforms.visible = False
+        gun1.visible = False
+        gun2.visible = False
+        gunAI.visible = False
+        startbuttonPVP.visible = False
+        bulletsp1.visible = False
+        bulletsp2.visible = False
+    elif key == 'i' and instructions.visible == True and app.AIMode == "On" and app.gameStart == False:
+        instructions.visible = False
+        app.gamePaused = "Off"
+        obstacles.visible = True
+        shields.visible = True
+        app.background = "darkGray"
+        homescreen.visible = False
+        player1right.visible = True
+        aileft.visible = True
+        platforms.visible = True
+        gun1.visible = True
+        gun2.visible = False
+        gunAI.visible = True
+        startbuttonAI.visible = True
+        bulletsp1.visible = False
+        bulletsAI.visible = False
+    elif key == 'i' and instructions.visible == True and app.PVPMode == "On" and app.gameStart == False:
+        instructions.visible = False
+        app.gamePaused = "On"
+        obstacles.visible = True
+        shields.visible = True
+        app.background = 'darkGray'
+        homescreen.visible = False
+        player1right.visible = True
+        player2left.visible = True
+        platforms.visible = True
+        gun1.visible = True
+        gun2.visible = True
+        gunAI.visible = False
+        startbuttonPVP.visible = True
+        bulletsp1.visible = False
+        bulletsp2.visible = False
+    elif key == 'i' and instructions.visible == False and app.AIMode == "On" and app.gameStart == True:
+        instructions.visible = True
+        app.gamePaused = "On"
+        obstacles.visible = False
+        shields.visible = False
+        app.background = 'black'
+        instructions.fill = 'white'
+        homescreen.visible = False
+        player1right.visible = False
+        aileft.visible = False
+        platforms.visible = False
+        gun1.visible = False
+        gun2.visible = False
+        gunAI.visible = False
+        startbuttonAI.visible = False
+        bulletsp1.visible = False
+        bulletsAI.visible = False
+    elif key == 'i' and instructions.visible == False and app.PVPMode == "On" and app.gameStart == True:
+        instructions.visible = True
+        app.gamePaused = "On"
+        obstacles.visible = False
+        shields.visible = False
+        app.background = 'black'
+        instructions.fill = 'white'
+        homescreen.visible = False
+        player1right.visible = False
+        player2left.visible = False
+        platforms.visible = False
+        gun1.visible = False
+        gun2.visible = False
+        gunAI.visible = False
+        startbuttonPVP.visible = False
+        bulletsp1.visible = False
+        bulletsp2.visible = False
+    elif key == 'i' and instructions.visible == True and app.AIMode == "On" and app.gameStart == True:
+        instructions.visible = False
+        app.gamePaused = "Off"
+        obstacles.visible = True
+        shields.visible = True
+        app.background = "darkGray"
+        homescreen.visible = False
+        player1right.visible = True
+        aileft.visible = True
+        platforms.visible = True
+        gun1.visible = True
+        gun2.visible = False
+        gunAI.visible = True
+        startbuttonAI.visible = True
+        bulletsp1.visible = True
+        bulletsAI.visible = True
+    elif key == 'i' and instructions.visible == True and app.PVPMode == "On" and app.gameStart == True:
+        instructions.visible = False
+        app.gamePaused = "On"
+        obstacles.visible = True
+        shields.visible = True
+        app.background = 'darkGray'
+        homescreen.visible = False
+        player1right.visible = True
+        player2left.visible = True
+        platforms.visible = True
+        gun1.visible = True
+        gun2.visible = True
+        gunAI.visible = False
+        startbuttonPVP.visible = True
+        bulletsp1.visible = True
+        bulletsp2.visible = True
+    elif key =='i' and homescreen.visible == True and instructions.visible == False:
+        instructions.visible = True
+        obstacles.visible = False
+        shields.visible = False
+        app.background = 'black'
+        instructions.fill = 'white'
+        homescreen.visible = False
+        player1right.visible = False
+        player2left.visible = False
+        aileft.visible = False
+        platforms.visible = False
+        gun1.visible = False
+        gun2.visible = False
+        gunAI.visible = False
+        startbuttonPVP.visible = False
+    elif key == 'i' and homescreen.visible == False and instructions.visible == True:
+        instructions.visible = False
+        obstacles.visible = False
+        shields.visible = False
+        homescreen.visible = True
+        app.background = "darkGray"
+        player1right.visible = False
+        player2left.visible = False
+        aileft.visible = False
+        platforms.visible = False
+        gun1.visible = False
+        gun2.visible = False
+        gunAI.visible = False
+        startbuttonPVP.visible = False
+def onMousePress(mouseX, mouseY):
+    #calls main function 1 if the Computer button on the home screen is clicked
+    #calls main function 2 if the Friend button on the home screen is clicked
+    #starts the game if either are clicked
+    if mouseX > 75 and mouseX < 175 and mouseY <350 and mouseY > 300:
+        app.AIMode = "On"
+        app.PVPMode = "Off"
+        AIMode()
+    elif mouseX > 225 and mouseX < 325 and mouseY < 350 and mouseY > 300:
+        app.PVPMode = "On"
+        app.AIMode ="Off"
+        PVPMode()
+    if app.AIMode == "On" and mouseX < 270 and mouseX > 130 and mouseY < 390 and mouseY > 360:
+        app.gameStart = True
+    if app.PVPMode == "On" and mouseX < 270 and mouseX > 130 and mouseY < 390 and mouseY > 360:
+        app.gameStart = True
+def onStep():
+    #calls a lot of the previous helper functions
+    #moves the obstacles, shields, checks if any player's health = 0
+    #automatically decreases the shield if the player has it
+    #automatically moves the AI, and makes it shoot
+    #fires the bullets of player 1 and player 2
+    #checks if a game is started
+    for boulder in obstacles.children:
+        if app.gameStart == True:
+            boulder.rotateAngle += 5
+            if boulder.centerY < 350:
+                boulder.centerY += 5
+            elif boulder.centerY >= 350:
+                boulder.centerY = 50
+                boulder.centerX = randrange(50, 350)
+    MoveShields()
+    CheckGameStart()
+    bulletsP1()
+    bulletsP2()
+    bullAI()
+    CheckIfP1HitAI()
+    CheckIfP1HitPVP()
+    CheckIfP2HitPVP()
+    CheckIfAIHit()
+    CheckIfObstaclesHitPlayer1AI()
+    CheckIfObstaclesHitPlayer1PVP()
+    CheckIfObstaclesHitPlayer2PVP()
+    GameEndPVP()
+    GameEndAI()
+    Player1ShieldAI()
+    Player1ShieldPVP()
+    Player2Shield()
+    DecreasePlayer1ShieldAI()
+    DecreasePlayer1ShieldPVP()
+    DecreasePlayer2ShieldPVP()
+    autoMoveAI()

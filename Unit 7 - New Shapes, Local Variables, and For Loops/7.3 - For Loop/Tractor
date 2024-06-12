@@ -1,0 +1,40 @@
+app.background = 'sienna'
+
+app.steps = 0
+
+Rect(0, 0, 400, 20, fill=rgb(60, 60, 60))
+Rect(0, 380, 400, 20, fill='limeGreen')
+
+tractor = Group(
+    Line(3, 200, -20, 100, lineWidth=1),
+    Line(3, 200, -20, 300, lineWidth=1),
+    Line(-20, 30, -20, 370, lineWidth=1),
+    Rect(5, 135, 60, 30, fill=rgb(60, 60, 60)),
+    Rect(5, 235, 60, 30, fill=rgb(60, 60, 60)),
+    Line(130, 170, 130, 230),
+    Rect(115, 155, 30, 20, fill=rgb(60, 60, 60)),
+    Rect(115, 225, 30, 20, fill=rgb(60, 60, 60)),
+    Rect(0, 165, 35, 70, fill='forestGreen'),
+    Polygon(35, 165, 70, 160, 70, 240, 35, 235,
+            fill=gradient('forestGreen', 'green', start='left')),
+    Polygon(70, 170, 150, 180, 150, 220, 70, 230, fill='green'),
+    Polygon(40, 175, 65, 170, 65, 230, 40, 225, fill=rgb(60, 60, 60)),
+    )
+
+def plantRow():
+    # Plant a column of 11 seeds, each seed 5 pixels to the left of the tractor.
+    ### (HINT: To get the y position, look at the top-most circle of a column.
+    #          How far down is it to the circle directly below it?)
+    ### Place Your Code Here ###
+    for i in range(11):
+        Circle(tractor.left - 5, i * 30 + 50, 5, fill = 'saddleBrown')
+
+def onStep():
+    tractor.centerX += 0.5
+
+    app.steps += 1
+    if (app.steps == 30):
+        app.steps = 0
+
+        # Plants a row every second.
+        plantRow()

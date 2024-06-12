@@ -1,0 +1,203 @@
+'''
+Author: Roy Gutta
+Creation Date: 2/13/24
+Last Modified: 2/23/24
+Project Description:
+My project shows a driller truck under a nice summer day, including a sun whose 
+points change automatically. The strength of the bars change based on the slider
+and the drill bit moves.
+Instructions:
+Move the slider on the bar to increase the strength of the arm. Click the mouse 
+underneath the drill bit to move it. Reset to change the position of the base.
+Credits:Raj Gutta(Dad) and Rajitha Gutta(Mom)
+Updates: Slider to control strength and sun
+Rubric Item:
+Local Variable 1: Line 136
+Local Variable 1 used again: Line 138
+Local Variable 2: 170
+Local Variable 2 used again: Line 174
+Custom property 1 accessed: Line 180
+Custom property 2 accessed: Line 192
+First shape randrange X: Line 42
+First shape randrange Y: Line 43
+Second shape using mouse: Lines 153 and 154
+Distance displayed: Line 163
+angleTo() displayed: Line 164
+Third Shape automatically created: Line 52
+getPointinDir(): Line 50
+'''
+
+#objects
+#creates the sky
+sky = Rect(0, 0, 400, 125, fill=rgb(140, 195, 255))
+#creates the part of the ground where the truck is on
+groundPart1 = Rect(90, 350, 350, 50, fill = 'saddleBrown')
+#creates the part of the ground where the truck is drilling
+groundPart2 = Rect(0, 375, 90, 25, fill = 'saddleBrown')
+#creates the body of the truck
+drillBody = Rect(90, 260, 275, 65, fill = None, border='black', borderWidth = 3)
+#creates the base of the arm
+#first shape using randrange
+drillBase = Circle(227.5, 295, 15)
+newCenterX = randrange(160, 345)
+newCenterY = randrange(280, 305)
+drillBase.centerX = newCenterX
+drillBase.centerY = newCenterY
+#creates the other line of arm
+Part1ofArm = Line(drillBase.centerX , drillBase.centerY, 200, 225)
+#creates the two connectors
+#3rd shape
+x, y = getPointInDir(Part1ofArm.x2, Part1ofArm.y2, -60, 120)
+drillElbowConnector = Circle(Part1ofArm.x2, Part1ofArm.y2, 15)
+drillConnector3 = Circle(x, y, 15)
+#creates 2 of the lines of the arm
+Part2ofArm = Line(Part1ofArm.x2, Part1ofArm.y2, drillConnector3.centerX, drillConnector3.centerY)
+Part3ofArm = Line(drillConnector3.centerX, drillConnector3.centerY, 45, 188)
+#creates the triangle shaped drill bit
+drillPart = Polygon(15, 186, 75, 186, 45, 249)
+#divides the driver from the rest of the truck
+DriversCabinDivider = Line(140, 260, 140, 325)
+#displays the distance
+distanceLabel = Label('', 40, 120, bold = True)
+#displays the angle
+angleLabel = Label('', 32, 135, bold = True)
+#creates the strength bar
+strengthBar = Rect(280, 130, 100, 20, fill = gradient('green', 'yellow', 'red', start = 'left'), border='black', borderWidth = 2)
+#creates the slider that moves on the strength bar
+slider = Rect(283, 130, 5, 20, fill = 'white')
+#shows the amount of strength
+amountofstrength = Label(0, 330, 165)
+#Sun
+Sun1 = Circle(18, 22, 30, fill=gradient(rgb(255, 223, 34), rgb(255, 219, 0), rgb(255, 215, 0), rgb(255, 229, 49)), visible=True)
+Sun = Star(18, 22, 43, 15, fill=gradient(rgb(255, 223, 34), rgb(255, 219, 0), rgb(255, 215, 0), rgb(255, 229, 49)), visible=True)
+#Tracks the number of points of the sun 
+Sun.numberofPointsonSun = 20
+#Displays what the color of the ground is
+NumberofPointsOnSun = Label('', 200, 135)
+groundPart1.color = 'brown'
+ColorofGround = Label('', 200, 150)
+#creates the wheels
+for i in range(5):
+    Circle(110+i*60, 336.5, 14)
+
+#object properties/methods
+#makes the star part of the sun at the same position as the circle part
+Sun.centerX = Sun1.centerX
+
+#groups
+#makes the cloud on the left
+cloud1 = Group(
+        Circle(240, 240, 30),
+        Circle(200, 260, 45),
+        Circle(150, 270, 30),
+        Circle(250, 290, 30),
+        Circle(275, 260, 40),
+        )
+#makes the cloud on the right
+cloud2 = Group(
+        Circle(240, 240, 30),
+        Circle(200, 260, 45),
+        Circle(150, 270, 30),
+        Circle(250, 290, 30),
+        Circle(275, 260, 40),
+        )
+#makes the driver
+driver = Group(
+        Circle(130, 277, 5),
+        Line(130, 277, 130, 305),
+        Line(130, 305, 109, 308),
+        Line(109, 308, 90, 325)
+        )
+#makes the steering 
+Steering = Group(
+        Line(91, 307, 104, 290),
+        Circle(104, 290, 10, fill='black'),
+        Circle(104, 290, 5, fill='grey'),
+        Line(97, 284, 112, 297, fill='grey'),
+        Line(111, 284, 99, 299, fill='grey'),
+        Line(130, 291, 112, 297)
+        )
+#group-properties/methods
+cloud1.centerY -= 200
+cloud1.centerX -= 100
+cloud1.fill = 'white'
+cloud1.opacity = 100
+cloud2.centerY -= 200
+cloud2.centerX += 100
+cloud2.fill = 'white'
+cloud2.opacity = 100
+cloud1.centerY -= 10
+    
+#functions
+def ChangeDrillColor():
+    #makes it so that the connectors, base, and drill bit change color based on  
+    #the base's centerX
+    if drillBase.centerX <= 252.5:
+        color = 'black'
+    else:
+        color = 'lightGray'
+    drillPart.fill = color
+    drillElbowConnector.fill = color
+    drillConnector3.fill = color
+    drillBase.fill = color
+ChangeDrillColor()
+
+#events
+def onMousePress(mouseX, mouseY):
+    #makes drill bit move based on the mouseX and mouseY as long as it is within
+    #the preset range
+    #2nd shape (moves based on mouse)
+    if mouseX <= 58 and mouseX >= 30 and mouseY <= 344 and mouseY >= 200:
+        Part3ofArm.x2 = mouseX
+        Part3ofArm.y2 = mouseY - 29.5
+        drillPart.centerX = mouseX
+        drillPart.centerY = mouseY
+def onStep():
+    #calculates the distance and angle from the last drill Connector to the actual drill Part, makes the sun move, adjusts the width of 
+    #the arm parts based on the strength set, changes the points of the Sun, and
+    #also changes the color of the ground based on the position of the Sun
+    num1 = distance(drillConnector3.centerX, drillConnector3.centerY, drillPart.centerX, drillPart.top)
+    num2 = angleTo(drillConnector3.centerX, drillConnector3.centerY, drillPart.centerX, drillPart.top)
+    roundednum1 = rounded(num1)
+    roundednum2 = rounded(num2)
+    distanceLabel.value = 'Distance: ' + str(roundednum1)
+    angleLabel.value = 'Angle: ' + str(roundednum2)
+    Sun1.centerX += 1
+    Sun.centerX = Sun1.centerX
+    if Sun1.left >= 400:
+        Sun1.right = 0
+    if amountofstrength.value == 0:
+        strength = 3
+    if amountofstrength.value == 100:
+        strength = 8
+    if amountofstrength.value == 50:
+        strength = 5.5
+    Part1ofArm.lineWidth = strength
+    Part2ofArm.lineWidth = strength
+    Part3ofArm.lineWidth = strength
+    if Sun1.centerX <= 200:
+        Sun.points = 15
+        Sun.numberofPointsonSun = 15
+        NumberofPointsOnSun.value = 'Number of points on Sun: ' + str(Sun.numberofPointsonSun)
+        groundPart1.fill = 'saddleBrown'
+        groundPart2.fill = 'saddleBrown'
+        groundPart1.color = 'Brown'
+        ColorofGround.value  = 'Color of Ground: ' + groundPart1.color
+    elif Sun1.centerX > 200:
+        Sun.points = 20
+        Sun.numberofPointsonSun = 20
+        NumberofPointsOnSun.value = 'Number of points on Sun: ' + str(Sun.numberofPointsonSun)
+        groundPart1.fill = 'darkGreen'
+        groundPart2.fill = 'darkGreen'
+        groundPart1.color = 'Green'
+        ColorofGround.value  = 'Color of Ground: ' + groundPart1.color
+def onMouseDrag(mouseX, mouseY):
+    #moves the slider if the mouse is dragged within the bar
+    if mouseX <= 375 and mouseX >= 284 and mouseY < 149 and mouseY > 131:
+        slider.centerX = mouseX
+        if slider.centerX <= 288:
+            amountofstrength.value = 0
+        if slider.centerX >= 373:
+            amountofstrength.value = 100
+        if slider.centerX > 288 and slider.centerX < 373:
+            amountofstrength.value = 50

@@ -1,0 +1,69 @@
+app.background = 'powderBlue'
+skyMask = Rect(0, 0, 400, 400, opacity=0)
+
+sun = Circle(200, 200, 80, fill=gradient('yellow', 'gold'))
+sunMask = Circle(200, 200, 80, fill='orangeRed', opacity=0)
+
+moon = Circle(0, 200, 78, fill=gradient('grey', 'powderBlue', start='left'))
+moonMask = Circle(0, 200, 78, opacity=0)
+
+ground = Oval(200, 400, 1500, 1000, fill='darkGreen', align='top')
+
+def moveMoon():
+    # Move the moon and its mask.
+    ### (HINT: Check the position, press the 'space' key, and then check
+    #          the position again to see how much it should change by.)
+    ### Place Your Code Here ###
+    moon.centerX += 20
+    moonMask.centerX += 20
+        
+    # If the moon's center value is off the canvas, set the moon and moonMask
+    # back to their initial x-values and set all of the masks' opacities to 0.
+    ### Place Your Code Here ###
+    if moon.centerX > 400:
+        moon.centerX = 0 
+        moonMask.centerX = 0
+        moonMask.opacity = 0
+        sunMask.opacity = 0
+        skyMask.opacity = 0
+
+def updateMasks():
+    # Decrease the opacities of the masks if the moon is to the right of the
+    # sun. Otherwise, if the moon has an x-coordinate larger than 0,
+    # increase the opacities. Also, rotate the moon so that the light side of
+    # the gradient is always on the sun side.
+    ### (HINT: Use a similar technique as with the moon position to determine
+    #          how much to change the opacities!)
+    ### Place Your Code Here ###
+    if moon.centerX == 0:
+        sunMask.opacity = 0
+        moonMask.opacity = 0
+        skyMask.opacity = 0
+        moon.rotateAngle = 0
+    elif moon.centerX < 200:
+         sunMask.opacity += 10
+         moonMask.opacity += 10
+         skyMask.opacity += 10
+         moon.rotateAngle = 0
+    elif moon.centerX == 200:
+        sunMask.opacity = 100
+        moonMask.opacity = 100
+        skyMask.opacity = 100
+    elif moon.centerX > 200:
+        moonMask.opacity -= 10
+        sunMask.opacity -= 10
+        skyMask.opacity -= 10
+        moon.rotateAngle = 180
+        
+
+def onKeyPress(key):
+    # When the space key is pressed, move the moon and update the masks. When the
+    # up or down arrow keys are pressed, move the ground up or down appropriately.
+    ### Place Your Code Here ###
+    if key == 'up':
+        ground.centerY -= 5
+    elif key == 'down':
+        ground.centerY += 5
+    if key == 'space':
+        moveMoon()
+        updateMasks()

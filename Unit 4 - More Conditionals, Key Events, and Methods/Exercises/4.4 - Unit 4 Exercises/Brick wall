@@ -1,0 +1,18 @@
+app.background = 'darkGrey'
+
+app.nextX = 0
+app.nextY = 380
+
+def onKeyPress(key):
+    # Draw a new brick at the location specified by the app custom properties.
+    Rect(app.nextX, app.nextY, 60, 40, fill='fireBrick', border='tan')
+    app.nextX+=60
+    
+
+    # Update the app custom properties to the position of the next brick.
+    ### (HINT: A row of bricks ends when the next brick's left is >= 400. And the
+    #          next row starts 380 pixels to the left of the brick just drawn.)
+    ### Place Your Code Here ###
+    if app.nextX >= 400:
+        app.nextX = app.nextX-440
+        app.nextY -= 40

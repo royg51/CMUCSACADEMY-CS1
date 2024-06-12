@@ -1,0 +1,234 @@
+'''
+Author: Roy Gutta
+Creation Date: 1/4/23
+Last Modified: 1/28/23
+Project Description:
+This is meant to resemble a car driving in the snow.
+It has clouds that can change color based on the time.
+The snow keeps on falling no matter what unless you press the mouse button or 
+change the time to night
+Instructions:
+Press 'n' to changes to night time and removes the snow.
+Pressing 'n' doesn't work if the clouds are white.
+The car keeps moving forward unless one of the following is pressed:
+The mouse button: stops everything and changes the clouds to white
+the 'a' key: stops the car only
+You control the car with:
+the 'w' key: makes the car go up
+the 's' key: makes the car go down
+the 'a' key: stops the car
+Credits: Raj Gutta(Dad) and Rajitha Gutta(Mom)
+Updates: Made the snowPile increase in height as the snow continues to fall 
+Rubric Item:
+if-elif-else: Line 205
+Nested Conditional: Line 213
+and: Line 229
+or: Line 212
+not: Line 148
+onKeyPress: Line 144
+onKeyRelease: Line 154
+onKeyHold key 1: Line 138
+onKeyHold key 2: Line 140
+Group 1: Line 50
+Group 2: Line 69
+Group property 1 set: Line 124
+Group property 2 set: Line 127
+Group method used: Line 150
+onStep property 1 changed: Line 202
+onStep property 2 changed: Line 204
+app.stepsPerSecond changed: Line 224
+Special Motion: Line 193
+Key/Mouse controls motion: Line 142
+'''
+#objects
+#creates the sky and the bottom part below the road.
+sky = Rect(0, 0, 400, 150, fill = rgb(140, 195, 255))
+Rect(0, 150, 400, 400, fill='white')
+
+#groups
+#makes the road
+road = Group(
+        Rect(0, 233.6, 400, 83.6),
+        Rect(25, 265, 50, 20, fill ='white'),
+        Rect(115, 265, 50, 20, fill ='white'),
+        Rect(205, 265, 50, 20, fill ='white'),
+        Rect(295, 265, 50, 20, fill ='white'),
+        Rect(385, 265, 50, 20, fill ='white')
+        )
+#makes the cloud on the left
+cloud1 = Group(
+        Circle(240, 240, 30),
+        Circle(200, 260, 45),
+        Circle(150, 270, 30),
+        Circle(250, 290, 30),
+        Circle(275, 260, 40),
+        )
+#makes the cloud on the right
+cloud2 = Group(
+        Circle(240, 240, 30),
+        Circle(200, 260, 45),
+        Circle(150, 270, 30),
+        Circle(250, 290, 30),
+        Circle(275, 260, 40),
+        )
+#makes the snow underneath the cloud on the left
+snow1 = Group(
+        Circle(50, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(100, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(150, 135, 13, borderWidth = 1, border = 'black'),
+        Circle(195, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(60, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(110, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(160, 170, 13, borderWidth = 1, border = 'black'),
+        Circle(210, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(50, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(100, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(150, 205, 13, borderWidth = 1, border = 'black'),
+        Circle(195, 190, 13, borderWidth = 1, border = 'black'),
+        )
+#makes the snow underneath the cloud on the right
+snow2 = Group(
+        Circle(250, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(300, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(350, 135, 13, borderWidth = 1, border = 'black'),
+        Circle(395, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(260, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(310, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(360, 170, 13, borderWidth = 1, border = 'black'),
+        Circle(410, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(250, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(300, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(350, 205, 13, borderWidth = 1, border = 'black'),
+        Circle(395, 190, 13, borderWidth = 1, border = 'black'),
+        )
+#makes the entire car
+car = Group(
+        Rect(150, 250, 75, 30, fill = 'skyBlue'),
+        Polygon(198, 233, 201, 233, 205, 265, 215, 253, 198, 233, fill = 'skyBlue'),
+        Line(205, 233, 201, 250),
+        Rect(165, 233, 40, 33, fill = 'skyBlue'),
+        Circle(165, 282, 11, fill = 'skyBlue'),
+        Circle(210, 282, 11, fill = 'skyBlue'),
+        )
+#makes the lines below the road to show a pile of snow
+snowPile = Group(
+    Line(0, 370, 38, 357),
+    Line(38, 357, 164, 370),
+    Line(164, 370, 238, 352),
+    Line(238, 352, 300, 370),
+    Line(300, 370, 400, 355)
+    )
+#group-properties/methods
+cloud1.centerY -= 200
+cloud1.centerX -= 100
+cloud1.fill = 'gainsboro'
+cloud1.opacity = 95
+cloud2.centerY -= 175
+cloud2.centerX += 100
+cloud2.fill = 'gainsboro'
+cloud2.opacity = 95
+snow1.fill = 'white'
+snow1.centerY += 25
+snow2.fill = 'white'
+snow2.centerY += 25
+
+#events
+def onKeyHold(keys):
+    #controls the car
+    if 'w' in keys:
+        car.centerY -= 10
+    if 's' in keys:
+        car.centerY += 10
+    if 'a' in keys:
+        car.centerX -= 10
+def onKeyPress(key):
+    #chanes the sky to nightime and removes the snow but still allows you to control
+    #the car
+    if key == 'n':
+        if not(cloud1.fill == 'white' or cloud2.fill == 'white'):
+            sky.fill = gradient(rgb(0, 0, 100),rgb(0, 0, 0), start = 'top')
+            snow1.clear()
+            snow2.clear()
+            cloud1.opacity = 100
+            cloud2.opacity = 100
+def onKeyRelease(key):
+    #changes the sky back to blue and re-adds the snow
+    if key == 'n':
+        sky.fill = rgb(140, 195, 255)
+        cloud1.opacity = 95
+        cloud2.opacity = 95
+        snow1.add(
+        Circle(50, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(100, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(150, 135, 13, borderWidth = 1, border = 'black'),
+        Circle(195, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(60, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(110, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(160, 170, 13, borderWidth = 1, border = 'black'),
+        Circle(210, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(50, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(100, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(150, 205, 13, borderWidth = 1, border = 'black'),
+        Circle(195, 190, 13, borderWidth = 1, border = 'black')
+        )
+        snow2.add(
+        Circle(250, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(300, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(350, 135, 13, borderWidth = 1, border = 'black'),
+        Circle(395, 120, 13, borderWidth = 1, border = 'black'),
+        Circle(260, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(310, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(360, 170, 13, borderWidth = 1, border = 'black'),
+        Circle(410, 155, 13, borderWidth = 1, border = 'black'),
+        Circle(250, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(300, 190, 13, borderWidth = 1, border = 'black'),
+        Circle(350, 205, 13, borderWidth = 1, border = 'black'),
+        Circle(395, 190, 13, borderWidth = 1, border = 'black'),
+        )
+        snow1.fill = 'white'
+        snow2.fill = 'white'
+def onStep():
+    #makes sure the car stays within the road and resets the snow once it reaches
+    #the bottom of the screen
+    if car.left >= 400:
+        car.left = 0
+    elif car.right <= 0:
+        car.right = 400
+    elif car.bottom >= 321:
+        car.bottom = 321
+        car.rotateAngle = 0
+    elif car.top <= 209:
+        car.top = 209
+        car.rotateAngle = 0
+    else:
+        car.centerX += 10
+    if snow1.top >= 400:
+        snow1.top = 120
+    elif snow2.top >= 400:
+        snow2.top = 120
+    else:
+        snow1.centerY += 10
+        snow2.centerY += 10
+    if snow1 or snow2.hits(snowPile.top, snowPile.centerY) == True:
+        if snowPile.top > 317:
+            snowPile.top -= 0.2
+    if snowPile.top == 317:
+        snowPile.top = 317
+def onMousePress(mouseX, mouseY):
+    #changes the clouds to white and stops everything
+    if sky.fill == rgb(140, 195, 255) and cloud1.fill == 'gainsboro':
+        cloud1.fill = 'white'
+        cloud2.fill = 'white'
+        cloud1.opacity = 100
+        cloud2.opacity = 100
+        app.stepsPerSecond = 0
+def onMouseRelease(mouseX, mouseY):
+    #changes the clouds back to their original color and reverts everything back to 
+    #normal
+    if ( not (sky.fill == gradient(rgb(0, 0, 100),rgb(0, 0, 0), start = 'top'))):
+        if cloud1.fill == 'white' and cloud2.fill == 'white':
+            cloud1.fill = 'gainsboro'
+            cloud2.fill = 'gainsboro'
+            cloud1.opacity = 95
+            cloud2.opacity = 95
+            app.stepsPerSecond = 30

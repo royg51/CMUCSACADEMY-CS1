@@ -1,0 +1,77 @@
+app.background = 'skyBlue'
+app.stepsPerSecond = 10
+
+app.popsicleWidth = 40
+
+# ice cream truck
+Rect(0, 275, 400, 155, fill=gradient('dimGray', 'lightSlateGray', start='left'))
+Polygon(0, 275, 0, 160, 15, 140, 385, 140, 400, 160, 400, 275,
+        fill=gradient('darkGrey', 'silver', start='left'))
+Oval(60, 187, 20, 10, fill='dimGray')
+Line(60, 0, 60, 190, fill=gradient('grey', 'silver', start='left'), lineWidth=15)
+
+# wheel
+Circle(440, 440, 200, fill=None, border='black', borderWidth=20)
+Star(440, 440, 200, 19, roundness=10)
+
+# sign
+Rect(25, 290, 150, 130, fill='white', opacity=60)
+Label('$2', 100, 305, fill='dimGrey', size=15)
+Line(100, 330, 100, 400, fill='tan', lineWidth=10)
+Arc(100, 330, 20, 20, 270, 180, fill='orange')
+Rect(90, 330, 20, 60, fill='orange')
+
+sticks = Group()
+popsicles = Group()
+drops = Group()
+
+def makeSinglePopsicle(cx, color):
+    sticks.add(
+        Oval(cx, 245, 20, 7, fill='dimGray'),
+        Rect(cx, 190, 15, 110, align='center',
+             fill=gradient('tan', 'navajoWhite', start='left'))
+        )
+
+    popsicle = Group(
+        Arc(cx, 95, app.popsicleWidth, 25, 270, 180, fill=color),
+        Rect(cx, 150, app.popsicleWidth, 110, fill=color, align='center')
+        )
+    popsicles.add(popsicle)
+
+def makePopsicle(n, color):
+    # Draw n popsicles in a row.
+    ### (HINT: We will move the popsicle groups to the correct centerX so you
+    #          just need to draw them anywhere. Starting on the left side of
+    #          the canvas will be easiest.)
+    ### Fix Your Code Here ###
+    for i in range(n):
+        makeSinglePopsicle(i * app.popsicleWidth, color)
+
+    # Moves the popsicles to the center of the canvas.
+    sticks.centerX = 200
+    popsicles.centerX = 200
+
+def makeDrop(x, y, color):
+    drops.add(Circle(x, y, 4, fill=color))
+
+def meltPopsicle():
+    # Melts the popsicle and creates drops.
+    if (popsicles.height < 2):
+        popsicles.clear()
+    else:
+        popsicles.height -= 2
+        popsicles.centerY += 1
+
+    for popsicle in popsicles.children:
+        makeDrop(popsicle.centerX, popsicle.bottom, popsicle.fill)
+
+def onStep():
+    # Move all of the drops down and remove them once they've reached the bottom
+    # of the canvas.
+    ### (HINT: We've defined a function above to help melt the popsicles.)
+    ### Place Your Code Here ###
+    for drop in drops:
+        drop.centerY += 4
+        if drop.centerY>= 400:
+            drops.remove(drop)
+    meltPopsicle()
